@@ -62,6 +62,10 @@ public class UserServiceImpl implements UserService {
             throw new UserNameAlreadyExistException("User Name Not Available");
         }
         User updateUser = getUser.get();
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
+        updateUser.setUserName(user.getUserName());
+        updateUser.setPassword(encryptedPassword);
         updateUser.setFirstName(user.getFirstName());
         updateUser.setLastName(user.getLastName());
         updateUser.setRole(user.getRole());
