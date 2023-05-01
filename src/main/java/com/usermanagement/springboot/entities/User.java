@@ -2,13 +2,12 @@ package com.usermanagement.springboot.entities;
 
 
 import lombok.*;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
@@ -40,23 +39,23 @@ public class User {
 
     @Column(name = "user_name", length = 50, unique = true)
     private String userName;
-    @Column( length = 255)
+    @Column(length = 255)
     private String password;
     @Column(name = "first_name", length = 50)
     private String firstName;
-    @Column(name = "last_name",length = 50)
+    @Column(name = "last_name", length = 50)
     private String lastName;
     @Column(nullable = false)
     private String role;
     @Column(name = "created_at")
     @CreatedDate
     private Date createdAt;
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     @LastModifiedDate
     private Date updatedAt;
     @Column
     private boolean deleted = Boolean.FALSE;
-    @Column(name="deleted_at")
+    @Column(name = "deleted_at")
     private Date deletedAt;
 
 

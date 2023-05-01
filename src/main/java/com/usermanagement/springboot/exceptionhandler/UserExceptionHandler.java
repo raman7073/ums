@@ -51,6 +51,7 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(NoContentExistException.class)
     public ResponseEntity<ErrorDetails> handleNoContentFoundException(NoContentExistException exception, WebRequest webRequest) {
 
@@ -61,7 +62,7 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
                 "NO_CONTENT_EXISTS"
         );
 
-        return new ResponseEntity<>(errorDetails,HttpStatus.OK);
+        return new ResponseEntity<>(errorDetails, HttpStatus.OK);
     }
 
     @ExceptionHandler(Exception.class)
@@ -84,7 +85,7 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         List<ObjectError> errorList = ex.getBindingResult().getAllErrors();
 
-        errorList.forEach((error) ->{
+        errorList.forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String message = error.getDefaultMessage();
             errors.put(fieldName, message);
