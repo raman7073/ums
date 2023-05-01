@@ -3,7 +3,6 @@ package com.usermanagement.springboot.dtos;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.Objects;
@@ -48,7 +47,7 @@ public class UserDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid,userName, password, firstName, lastName, role, createdAt, updatedAt, deletedAt);
+        return Objects.hash(uuid, userName, password, firstName, lastName, role, createdAt, updatedAt, deletedAt);
     }
 
     @Override
