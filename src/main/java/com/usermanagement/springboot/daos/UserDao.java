@@ -10,19 +10,11 @@ import java.util.UUID;
 
 public interface UserDao extends JpaRepository<User, UUID> {
     @Override
-    @Query(
-            value = "SELECT * FROM users u WHERE u.deleted = false",
-            nativeQuery = true)
+    @Query(value = "SELECT * FROM users u WHERE u.deleted = false", nativeQuery = true)
     List<User> findAll();
 
     Optional<User> findUserByuserName(String userName);
 
-
     boolean existsByuserName(String userName);
 
-    /*
-
-      public void deleteUserByuserName(String userName);
-
-     */
 }

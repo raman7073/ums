@@ -1,16 +1,16 @@
 package com.usermanagement.springboot.services.Impl;
 
 import com.usermanagement.springboot.daos.UserDao;
+import com.usermanagement.springboot.dtos.UserDTO;
 import com.usermanagement.springboot.entities.User;
-import com.usermanagement.springboot.exceptions.NoContentExistException;
 import com.usermanagement.springboot.exceptions.ResourceNotFoundException;
 import com.usermanagement.springboot.exceptions.UserNameAlreadyExistException;
 import com.usermanagement.springboot.services.UserService;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,11 +21,11 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
 
 
-    @SneakyThrows //as it throws exception
-    @Override
-    public User createUser(User user) {
 
-        // for concurrent environment we need to check database
+    @Override
+    public UserDTO createUser(UserDTO userDTO) {
+
+        User user = userDTO.convert(userDTO);
         if (userDao.existsByuserName(user.getUserName())) {
             throw new UserNameAlreadyExistException("User Name Already Exists");
         }
@@ -34,31 +34,31 @@ public class UserServiceImpl implements UserService {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
-        return userDao.save(user);
+        return user.convert(userDao.save(user));
 
     }
 
-    @SneakyThrows
     @Override
-    public List<User> getAllUser() {
+    public List<UserDTO> getAllUser() {
         List<User> userList = userDao.findAll();
-        if (userList.isEmpty()) {
-            throw new NoContentExistException("No Content Exists");
-        }
-        return userList;
+        List<UserDTO> userDTOList = new ArrayList<>();
+        userList.forEach(user -> userDTOList.add(user.convert(user)) );
+
+        return userDTOList;
     }
 
     @Override
-    public User updateUser(UUID uuid, User user) {
+    public UserDTO updateUser(UUID userId, UserDTO userDTO) {
 
-
-        Optional<User> getUser = Optional.ofNullable(userDao.findById(uuid).orElseThrow(
-                () -> new ResourceNotFoundException("User", "id", String.valueOf(uuid)))
-        );
-
+        User user = userDTO.convert(userDTO);
         Optional<User> userDb = userDao.findUserByuserName(user.getUserName());
 
-        if (userDb.isPresent() && uuid != userDb.get().getUuid()) {
+        Optional<User> getUser = Optional.ofNullable(userDao.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User", "id", String.valueOf(userId)))
+        );
+
+
+        if (userDb.isPresent() && userId!= userDb.get().getUserId()) {
             throw new UserNameAlreadyExistException("User Name Not Available");
         }
         User updateUser = getUser.get();
@@ -69,21 +69,23 @@ public class UserServiceImpl implements UserService {
         updateUser.setFirstName(user.getFirstName());
         updateUser.setLastName(user.getLastName());
         updateUser.setRole(user.getRole());
-        return userDao.save(updateUser);
+        User user1=userDao.save(updateUser);
+        return user1.convert(user1);
 
     }
 
 
     @Override
-    public User getUser(UUID uuid) {
+    public UserDTO getUser(UUID uuid) {
         Optional<User> user = Optional.ofNullable(userDao.findById(uuid).orElseThrow(() -> new ResourceNotFoundException("User", "uuid", String.valueOf(uuid))));
-        return user.get();
+        User user1 = user.get();
+        return user1.convert(user1);
     }
 
     @Override
     public boolean deleteUser(UUID uuid) {
 
-        User existingUser = userDao.findById(uuid).orElseThrow(() -> new ResourceNotFoundException("User", "uuid", String.valueOf(uuid)));
+        userDao.findById(uuid).orElseThrow(() -> new ResourceNotFoundException("User", "uuid", String.valueOf(uuid)));
         userDao.deleteById(uuid);
         return true;
 

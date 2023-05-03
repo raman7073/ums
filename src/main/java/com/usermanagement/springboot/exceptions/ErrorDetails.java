@@ -1,14 +1,14 @@
 package com.usermanagement.springboot.exceptions;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class ErrorDetails {
@@ -18,13 +18,4 @@ public class ErrorDetails {
     private String path;
     private String errorCode;
 
-    @Override
-    public String toString() {
-        return "ErrorDetails{" +
-                "timestamp=" + timestamp +
-                ", message='" + message + '\'' +
-                ", path='" + path + '\'' +
-                ", errorCode='" + errorCode + '\'' +
-                '}';
-    }
 }

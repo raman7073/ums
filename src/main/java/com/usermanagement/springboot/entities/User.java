@@ -1,19 +1,23 @@
 package com.usermanagement.springboot.entities;
 
 
+import com.usermanagement.springboot.dtos.UserDTO;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
 
 
 @Builder
+@ToString
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,55 +27,48 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE users SET deleted = true ,deleted_at= CURRENT_TIMESTAMP WHERE id=?")
 @Where(clause = "deleted=false")
-public class User {
+public class User implements Converter<User, UserDTO> {
 
-    /*
-      Automatically generate the primary key and
-      (for Auto generation type persistence provider should
-      automatically pick an appropriate strategy for the particular database.)
-      IDENTITY. Indicates that the persistence provider must assign primary keys
-      for the entity using a database identity column
-    */
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private UUID uuid;
+    private UUID userId;
 
     @Column(name = "user_name", length = 50, unique = true)
     private String userName;
-    @Column(length = 255)
+
+    @Column
     private String password;
+
     @Column(name = "first_name", length = 50)
     private String firstName;
     @Column(name = "last_name", length = 50)
     private String lastName;
     @Column(nullable = false)
     private String role;
-    @Column(name = "created_at")
-    @CreatedDate
+
+    @CreationTimestamp
     private Date createdAt;
-    @Column(name = "updated_at")
-    @LastModifiedDate
+
+    @Column
+    @UpdateTimestamp
     private Date updatedAt;
+
     @Column
     private boolean deleted = Boolean.FALSE;
-    @Column(name = "deleted_at")
-    private Date deletedAt;
+
+    @Column
+    private Timestamp deletedAt;
 
 
     @Override
-    public String toString() {
-        return "User{" +
-                "uuid=" + uuid +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", role='" + role + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", deleted=" + deleted +
-                ", deletedAt=" + deletedAt +
-                '}';
+    public UserDTO convert(User user) {
+
+        return UserDTO.builder().userName(user.getUserName()).userId(user.getUserId()).
+                firstName(user.getFirstName()).lastName(user.getLastName()).
+                role(user.getRole()).createdAt(user.getCreatedAt()).updatedAt(user.getUpdatedAt()).build();
+
+
     }
 }

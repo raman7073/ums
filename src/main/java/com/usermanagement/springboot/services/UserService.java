@@ -1,18 +1,17 @@
 package com.usermanagement.springboot.services;
-
-import com.usermanagement.springboot.entities.User;
+import com.usermanagement.springboot.dtos.UserDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    public User createUser(User user);
+    public UserDTO createUser(UserDTO userDTO);
 
-    public User updateUser(UUID uuid, User user);
+    public UserDTO updateUser(UUID userId, UserDTO user);
 
-    public User getUser(UUID uuid);
+    public UserDTO getUser(UUID userId);
 
-    public boolean deleteUser(UUID uuid);
+    public boolean deleteUser(UUID userId);
 
-    public List<User> getAllUser();
+    public List<UserDTO> getAllUser();
 }

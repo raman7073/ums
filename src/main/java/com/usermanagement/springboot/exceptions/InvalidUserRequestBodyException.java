@@ -1,5 +1,9 @@
 package com.usermanagement.springboot.exceptions;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class InvalidUserRequestBodyException extends RuntimeException {
     private final String fieldName;
     private final String reason;
