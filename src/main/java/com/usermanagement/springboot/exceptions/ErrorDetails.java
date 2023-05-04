@@ -7,15 +7,11 @@ import lombok.ToString;
 
 import java.time.LocalDateTime;
 
-@Data
-@ToString
 @AllArgsConstructor
-@NoArgsConstructor
 public class ErrorDetails {
 
     private LocalDateTime timestamp;
     private String message;
     private String path;
     private String errorCode;
-
 }

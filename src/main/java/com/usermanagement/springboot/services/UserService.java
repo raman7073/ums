@@ -7,7 +7,7 @@ import java.util.UUID;
 public interface UserService {
     public UserDTO createUser(UserDTO userDTO);
 
-    public UserDTO updateUser(UUID userId, UserDTO user);
+    public UserDTO updateUser(UserDTO user);
 
     public UserDTO getUser(UUID userId);
 

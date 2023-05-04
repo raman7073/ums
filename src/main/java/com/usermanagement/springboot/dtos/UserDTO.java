@@ -6,14 +6,12 @@ import lombok.*;
 import org.springframework.core.convert.converter.Converter;
 
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
 @Builder
-@ToString
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
 public class UserDTO implements Converter<UserDTO, User> {
 
@@ -35,19 +33,17 @@ public class UserDTO implements Converter<UserDTO, User> {
     @NotEmpty(message = "Role should not be null or empty")
     private String role;
 
+    private LocalDateTime createdAt;
 
-    private Date createdAt;
+    private LocalDateTime updatedAt;
 
-    private Date updatedAt;
-
-    private Date deletedAt;
+    private LocalDateTime deletedAt;
 
     @Override
     public User convert(UserDTO userDTO) {
-        return User.builder().userName(userDTO.getUserName()).password(userDTO.getPassword()).
-                firstName(userDTO.getFirstName()).lastName(userDTO.getLastName()).
-                role(userDTO.getRole()).build();
 
+        return User.builder().userName(userDTO.getUserName()).
+                password(userDTO.getPassword()).firstName(userDTO.getFirstName()).
+                lastName(userDTO.getLastName()).role(userDTO.getRole()).build();
     }
-
 }

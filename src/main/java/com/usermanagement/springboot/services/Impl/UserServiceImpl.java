@@ -6,7 +6,7 @@ import com.usermanagement.springboot.entities.User;
 import com.usermanagement.springboot.exceptions.ResourceNotFoundException;
 import com.usermanagement.springboot.exceptions.UserNameAlreadyExistException;
 import com.usermanagement.springboot.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +16,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    @Autowired
     private UserDao userDao;
-
-
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
@@ -29,36 +27,32 @@ public class UserServiceImpl implements UserService {
         if (userDao.existsByuserName(user.getUserName())) {
             throw new UserNameAlreadyExistException("User Name Already Exists");
         }
-
-
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
         return user.convert(userDao.save(user));
-
     }
 
     @Override
     public List<UserDTO> getAllUser() {
+
         List<User> userList = userDao.findAll();
         List<UserDTO> userDTOList = new ArrayList<>();
-        userList.forEach(user -> userDTOList.add(user.convert(user)) );
-
+        userList.forEach(user -> userDTOList.add(user.convert(user)));
         return userDTOList;
     }
 
     @Override
-    public UserDTO updateUser(UUID userId, UserDTO userDTO) {
+    public UserDTO updateUser(UserDTO userDTO) {
 
         User user = userDTO.convert(userDTO);
         Optional<User> userDb = userDao.findUserByuserName(user.getUserName());
-
-        Optional<User> getUser = Optional.ofNullable(userDao.findById(userId).orElseThrow(
-                () -> new ResourceNotFoundException("User", "id", String.valueOf(userId)))
+        Optional<User> getUser = Optional.ofNullable(userDao.findById(user.getUserId()).
+                orElseThrow(
+                        () -> new ResourceNotFoundException("User", "id", String.valueOf(user.getUserId()))
+                )
         );
-
-
-        if (userDb.isPresent() && userId!= userDb.get().getUserId()) {
+        if (userDb.isPresent() && user.getUserId() != userDb.get().getUserId()) {
             throw new UserNameAlreadyExistException("User Name Not Available");
         }
         User updateUser = getUser.get();
@@ -69,27 +63,27 @@ public class UserServiceImpl implements UserService {
         updateUser.setFirstName(user.getFirstName());
         updateUser.setLastName(user.getLastName());
         updateUser.setRole(user.getRole());
-        User user1=userDao.save(updateUser);
+        User user1 = userDao.save(updateUser);
         return user1.convert(user1);
-
     }
 
-
     @Override
-    public UserDTO getUser(UUID uuid) {
-        Optional<User> user = Optional.ofNullable(userDao.findById(uuid).orElseThrow(() -> new ResourceNotFoundException("User", "uuid", String.valueOf(uuid))));
+    public UserDTO getUser(UUID userId) {
+
+        Optional<User> user = Optional.ofNullable(userDao.findById(userId).
+                orElseThrow(() -> new ResourceNotFoundException("User", "userId", String.valueOf(userId)))
+        );
         User user1 = user.get();
         return user1.convert(user1);
     }
 
     @Override
-    public boolean deleteUser(UUID uuid) {
+    public boolean deleteUser(UUID userId) {
 
-        userDao.findById(uuid).orElseThrow(() -> new ResourceNotFoundException("User", "uuid", String.valueOf(uuid)));
-        userDao.deleteById(uuid);
+        userDao.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User", "userId", String.valueOf(userId))
+        );
+        userDao.deleteById(userId);
         return true;
-
     }
-
-
 }

@@ -12,23 +12,18 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
 
 @Builder
-@ToString
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Entity
 @Table(name = "users")
-@EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE users SET deleted = true ,deleted_at= CURRENT_TIMESTAMP WHERE id=?")
 @Where(clause = "deleted=false")
 public class User implements Converter<User, UserDTO> {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -43,17 +38,19 @@ public class User implements Converter<User, UserDTO> {
 
     @Column(name = "first_name", length = 50)
     private String firstName;
+
     @Column(name = "last_name", length = 50)
     private String lastName;
+
     @Column(nullable = false)
     private String role;
 
     @CreationTimestamp
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Column
     @UpdateTimestamp
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column
     private boolean deleted = Boolean.FALSE;
@@ -61,14 +58,11 @@ public class User implements Converter<User, UserDTO> {
     @Column
     private Timestamp deletedAt;
 
-
     @Override
     public UserDTO convert(User user) {
 
         return UserDTO.builder().userName(user.getUserName()).userId(user.getUserId()).
                 firstName(user.getFirstName()).lastName(user.getLastName()).
                 role(user.getRole()).createdAt(user.getCreatedAt()).updatedAt(user.getUpdatedAt()).build();
-
-
     }
 }

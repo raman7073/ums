@@ -22,29 +22,70 @@ import java.util.Map;
 @ControllerAdvice
 public class UserExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorDetails> handleResourceNotFoundException(ResourceNotFoundException exception, WebRequest webRequest) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), exception.getMessage(), webRequest.getDescription(false), "User Not Found");
+    public ResponseEntity<ErrorDetails> handleResourceNotFoundException(ResourceNotFoundException exception,
+                                                                        WebRequest webRequest) {
+
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                "RESOURCE_NOT_FOUND"
+        );
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UserNameAlreadyExistException.class)
-    public ResponseEntity<ErrorDetails> handleUserNameAlreadyExistException(UserNameAlreadyExistException exception, WebRequest webRequest) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), exception.getMessage(), webRequest.getDescription(false), "User_Name_Already_Exist");
+    public ResponseEntity<ErrorDetails> handleUserNameAlreadyExistException(UserNameAlreadyExistException exception,
+                                                                            WebRequest webRequest) {
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                "USER_NAME_ALREADY_EXIST"
+        );
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidUserRequestBodyException.class)
-    public ResponseEntity<ErrorDetails> handleInvalidUserRequestBodyException(InvalidUserRequestBodyException exception, WebRequest webRequest) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), exception.getMessage(), webRequest.getDescription(false), "Invalid_Request_Body");
+    public ResponseEntity<ErrorDetails> handleInvalidUserRequestBodyException(InvalidUserRequestBodyException exception,
+                                                                              WebRequest webRequest) {
+
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                "INVALID_REQUEST_BODY"
+        );
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleAllOtherException(Exception exception, WebRequest webRequest) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), exception.getMessage(), webRequest.getDescription(false), "INTERNAL_SERVER_ERROR");
+
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                "INTERNAL_SERVER_ERROR"
+        );
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
+                                                               HttpHeaders headers,
+                                                               HttpStatus status,
+                                                               WebRequest request) {
+
+        Map<String, String> errors = new HashMap<>();
+        List<ObjectError> errorList = exception.getBindingResult().getAllErrors();
+
+        errorList.forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String message = error.getDefaultMessage();
+            errors.put(fieldName, message);
+        });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
 
 
 }
