@@ -2,12 +2,13 @@ package com.usermanagement.springboot.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.usermanagement.springboot.entities.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import org.springframework.core.convert.converter.Converter;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 @Builder
@@ -43,7 +44,9 @@ public class UserDTO implements Converter<UserDTO, User> {
     public User convert(UserDTO userDTO) {
 
         return User.builder().userName(userDTO.getUserName()).
-                password(userDTO.getPassword()).firstName(userDTO.getFirstName()).
-                lastName(userDTO.getLastName()).role(userDTO.getRole()).build();
+                password(userDTO.getPassword()).
+                firstName(userDTO.getFirstName()).
+                lastName(userDTO.getLastName()).
+                role(userDTO.getRole()).build();
     }
 }

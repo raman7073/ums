@@ -13,8 +13,8 @@ public interface UserDao extends JpaRepository<User, UUID> {
     @Query(value = "SELECT * FROM users u WHERE u.deleted = false", nativeQuery = true)
     List<User> findAll();
 
-    Optional<User> findUserByuserName(String userName);
+    Optional<User> findUserByUserName(String userName);
 
-    boolean existsByuserName(String userName);
+    boolean existsByUserName(String userName);
 
 }

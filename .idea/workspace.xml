@@ -5,8 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="203fec80-a7a6-41cb-a023-bd18884a73ce" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/controllers/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/daos/UserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/daos/UserDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/dtos/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/dtos/UserDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/entities/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/services/Impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/services/Impl/UserServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

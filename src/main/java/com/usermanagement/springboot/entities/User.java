@@ -2,18 +2,17 @@ package com.usermanagement.springboot.entities;
 
 
 import com.usermanagement.springboot.dtos.UserDTO;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 
@@ -61,8 +60,12 @@ public class User implements Converter<User, UserDTO> {
     @Override
     public UserDTO convert(User user) {
 
-        return UserDTO.builder().userName(user.getUserName()).userId(user.getUserId()).
-                firstName(user.getFirstName()).lastName(user.getLastName()).
-                role(user.getRole()).createdAt(user.getCreatedAt()).updatedAt(user.getUpdatedAt()).build();
+        return UserDTO.builder().userName(user.getUserName()).
+                userId(user.getUserId()).
+                firstName(user.getFirstName()).
+                lastName(user.getLastName()).
+                role(user.getRole()).
+                createdAt(user.getCreatedAt()).
+                updatedAt(user.getUpdatedAt()).build();
     }
 }

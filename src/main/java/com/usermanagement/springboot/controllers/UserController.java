@@ -3,7 +3,7 @@ package com.usermanagement.springboot.controllers;
 
 import com.usermanagement.springboot.dtos.UserDTO;
 import com.usermanagement.springboot.services.UserService;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RequestMapping("v1/users")
 public class UserController {
     private UserService userService;

@@ -6,7 +6,7 @@ import com.usermanagement.springboot.entities.User;
 import com.usermanagement.springboot.exceptions.ResourceNotFoundException;
 import com.usermanagement.springboot.exceptions.UserNameAlreadyExistException;
 import com.usermanagement.springboot.services.UserService;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private UserDao userDao;
 
@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO createUser(UserDTO userDTO) {
 
         User user = userDTO.convert(userDTO);
-        if (userDao.existsByuserName(user.getUserName())) {
+        if (userDao.existsByUserName(user.getUserName())) {
             throw new UserNameAlreadyExistException("User Name Already Exists");
         }
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(UserDTO userDTO) {
 
         User user = userDTO.convert(userDTO);
-        Optional<User> userDb = userDao.findUserByuserName(user.getUserName());
+        Optional<User> userDb = userDao.findUserByUserName(user.getUserName());
         Optional<User> getUser = Optional.ofNullable(userDao.findById(user.getUserId()).
                 orElseThrow(
                         () -> new ResourceNotFoundException("User", "id", String.valueOf(user.getUserId()))
