@@ -1,6 +1,7 @@
 package com.usermanagement.springboot.controllers;
 
 
+import com.usermanagement.springboot.dtos.PasswordDTO;
 import com.usermanagement.springboot.dtos.UserDTO;
 import com.usermanagement.springboot.services.UserService;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @RequestMapping("v1/users")
 public class UserController {
+
     private UserService userService;
 
     @PostMapping
@@ -43,7 +45,9 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable("userId") UUID userId, @RequestBody @Valid UserDTO userDTO) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable("userId") UUID userId,
+                                              @RequestBody @Valid UserDTO userDTO) {
+
         userDTO.setUserId(userId);
         UserDTO userDTO1 = userService.updateUser(userDTO);
         return new ResponseEntity<>(userDTO1, HttpStatus.OK);
@@ -53,6 +57,16 @@ public class UserController {
     public ResponseEntity<UserDTO> deleteUser(@PathVariable("userId") UUID userId) {
 
         userService.deleteUser(userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<String> changePassword(@RequestBody @Valid PasswordDTO passwordDTO) {
+
+        boolean success = userService.changePassword(passwordDTO);
+        if (success) {
+            return ResponseEntity.status(HttpStatus.OK).body("Updated Successfully");
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

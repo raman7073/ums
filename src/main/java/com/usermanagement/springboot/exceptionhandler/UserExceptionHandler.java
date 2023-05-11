@@ -57,7 +57,7 @@ public class UserExceptionHandler {
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
-
+/*
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleAllOtherException(Exception exception, WebRequest webRequest) {
 
@@ -69,7 +69,7 @@ public class UserExceptionHandler {
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+*/
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
                                                                HttpHeaders headers,

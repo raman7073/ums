@@ -1,4 +1,6 @@
 package com.usermanagement.springboot.services;
+
+import com.usermanagement.springboot.dtos.PasswordDTO;
 import com.usermanagement.springboot.dtos.UserDTO;
 
 import java.util.List;
@@ -12,6 +14,8 @@ public interface UserService {
     public UserDTO getUser(UUID userId);
 
     public boolean deleteUser(UUID userId);
+
+    public boolean changePassword(PasswordDTO passwordDTO);
 
     public List<UserDTO> getAllUser();
 }

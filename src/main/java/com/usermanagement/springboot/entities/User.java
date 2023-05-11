@@ -2,8 +2,9 @@ package com.usermanagement.springboot.entities;
 
 
 import com.usermanagement.springboot.dtos.UserDTO;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,12 +17,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 
-@Builder
 @Data
 @Entity
 @Table(name = "users")
 @SQLDelete(sql = "UPDATE users SET deleted = true ,deleted_at= CURRENT_TIMESTAMP WHERE id=?")
 @Where(clause = "deleted=false")
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements Converter<User, UserDTO> {
 
     @Id
@@ -29,8 +31,8 @@ public class User implements Converter<User, UserDTO> {
     @Column(name = "id")
     private UUID userId;
 
-    @Column(name = "user_name", length = 50, unique = true)
-    private String userName;
+    @Column(length = 50, unique = true)
+    private String username;
 
     @Column
     private String password;
@@ -60,7 +62,7 @@ public class User implements Converter<User, UserDTO> {
     @Override
     public UserDTO convert(User user) {
 
-        return UserDTO.builder().userName(user.getUserName()).
+        return UserDTO.builder().username(user.getUsername()).
                 userId(user.getUserId()).
                 firstName(user.getFirstName()).
                 lastName(user.getLastName()).
@@ -68,4 +70,6 @@ public class User implements Converter<User, UserDTO> {
                 createdAt(user.getCreatedAt()).
                 updatedAt(user.getUpdatedAt()).build();
     }
+
+
 }

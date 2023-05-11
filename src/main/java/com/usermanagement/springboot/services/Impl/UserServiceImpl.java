@@ -1,12 +1,15 @@
 package com.usermanagement.springboot.services.Impl;
 
-import com.usermanagement.springboot.daos.UserDao;
+import com.usermanagement.springboot.daos.UserDAO;
+import com.usermanagement.springboot.dtos.PasswordDTO;
 import com.usermanagement.springboot.dtos.UserDTO;
 import com.usermanagement.springboot.entities.User;
 import com.usermanagement.springboot.exceptions.ResourceNotFoundException;
 import com.usermanagement.springboot.exceptions.UserNameAlreadyExistException;
 import com.usermanagement.springboot.services.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +21,14 @@ import java.util.UUID;
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
-    private UserDao userDao;
+    private UserDAO userDao;
+
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
 
         User user = userDTO.convert(userDTO);
-        if (userDao.existsByUserName(user.getUserName())) {
+        if (userDao.existsByUsername(user.getUsername())) {
             throw new UserNameAlreadyExistException("User Name Already Exists");
         }
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
@@ -46,7 +50,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(UserDTO userDTO) {
 
         User user = userDTO.convert(userDTO);
-        Optional<User> userDb = userDao.findUserByUserName(user.getUserName());
+        Optional<User> userDb = userDao.findUserByUsername(user.getUsername());
         Optional<User> getUser = Optional.ofNullable(userDao.findById(user.getUserId()).
                 orElseThrow(
                         () -> new ResourceNotFoundException("User", "id", String.valueOf(user.getUserId()))
@@ -58,7 +62,7 @@ public class UserServiceImpl implements UserService {
         User updateUser = getUser.get();
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
-        updateUser.setUserName(user.getUserName());
+        updateUser.setUsername(user.getUsername());
         updateUser.setPassword(encryptedPassword);
         updateUser.setFirstName(user.getFirstName());
         updateUser.setLastName(user.getLastName());
@@ -86,4 +90,38 @@ public class UserServiceImpl implements UserService {
         userDao.deleteById(userId);
         return true;
     }
+
+    @Override
+    public boolean changePassword(PasswordDTO passwordDTO) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+
+            String username = authentication.getName();
+            Optional<User> user = Optional.ofNullable(
+                    userDao.findUserByUsername(username).orElseThrow(
+                            () -> new ResourceNotFoundException("username", "No User Exist", username)
+                    )
+            );
+            if (!user.isPresent()) {
+
+                return false;
+            }
+            BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+            if (!bCryptPasswordEncoder.matches(passwordDTO.getOldPassword(), user.get().getPassword())) {
+                System.out.println("Password is not matching");
+                return false;
+            }
+            user.ifPresent(user1 -> {
+
+                user1.setPassword(bCryptPasswordEncoder.encode(passwordDTO.getNewPassword()));
+                userDao.save(user1);
+            });
+
+        }
+        return true;
+    }
+
+
 }

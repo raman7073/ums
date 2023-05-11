@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserDao extends JpaRepository<User, UUID> {
+public interface UserDAO extends JpaRepository<User, UUID> {
     @Override
     @Query(value = "SELECT * FROM users u WHERE u.deleted = false", nativeQuery = true)
     List<User> findAll();
 
-    Optional<User> findUserByUserName(String userName);
+    Optional<User> findUserByUsername(String username);
 
-    boolean existsByUserName(String userName);
+    boolean existsByUsername(String userName);
 
 }

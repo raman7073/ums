@@ -19,7 +19,7 @@ public class UserDTO implements Converter<UserDTO, User> {
     private UUID userId;
 
     @NotEmpty(message = "User Name should not be null or empty")
-    private String userName;
+    private String username;
 
     @NotEmpty(message = "Password should not be null or empty")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -42,11 +42,13 @@ public class UserDTO implements Converter<UserDTO, User> {
 
     @Override
     public User convert(UserDTO userDTO) {
+        User user = new User();
 
-        return User.builder().userName(userDTO.getUserName()).
-                password(userDTO.getPassword()).
-                firstName(userDTO.getFirstName()).
-                lastName(userDTO.getLastName()).
-                role(userDTO.getRole()).build();
+        user.setUsername(userDTO.getUsername());
+        user.setPassword(userDTO.getPassword());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setRole(userDTO.getRole());
+        return user;
     }
 }
