@@ -4,34 +4,38 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.usermanagement.springboot.entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.core.convert.converter.Converter;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static com.usermanagement.springboot.common.Constants.*;
+
 @Builder
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
-public class UserDTO implements Converter<UserDTO, User> {
+public class UserDTO implements Converter<User, UserDTO> {
 
     private UUID userId;
 
-    @NotEmpty(message = "User Name should not be null or empty")
+    @NotEmpty(message = INVALID_USERNAME)
     private String username;
 
-    @NotEmpty(message = "Password should not be null or empty")
+    @NotEmpty(message = INVALID_PASSWORD)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @NotEmpty(message = "First Name should not be null or empty")
+    @NotEmpty(message = INVALID_FIRST_NAME)
     private String firstName;
 
-    @NotEmpty(message = "Last Name should not be null or empty")
+    @NotEmpty(message = INVALID_LAST_NAME)
     private String lastName;
 
-    @NotEmpty(message = "Role should not be null or empty")
+    @NotEmpty(message = INVALID_ROLE)
     private String role;
 
     private LocalDateTime createdAt;
@@ -41,14 +45,13 @@ public class UserDTO implements Converter<UserDTO, User> {
     private LocalDateTime deletedAt;
 
     @Override
-    public User convert(UserDTO userDTO) {
-        User user = new User();
-
-        user.setUsername(userDTO.getUsername());
-        user.setPassword(userDTO.getPassword());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setRole(userDTO.getRole());
-        return user;
+    public UserDTO convert(User user) {
+        return UserDTO.builder().username(user.getUsername()).
+                userId(user.getUserId()).
+                firstName(user.getFirstName()).
+                lastName(user.getLastName()).
+                role(user.getRole()).
+                createdAt(user.getCreatedAt()).
+                updatedAt(user.getUpdatedAt()).build();
     }
 }

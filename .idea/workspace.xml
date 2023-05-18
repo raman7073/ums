@@ -6,11 +6,23 @@
   <component name="ChangeListManager">
     <list default="true" id="203fec80-a7a6-41cb-a023-bd18884a73ce" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/SpringBootRestfulApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/SpringBootRestfulApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/configs/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/configs/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/controllers/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/controllers/AuthController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/controllers/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/daos/UserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/daos/UserDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/daos/UserDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/daos/UserDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/dtos/AuthRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/dtos/LoginDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/dtos/AuthResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/dtos/AuthResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/dtos/PasswordDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/dtos/PasswordDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/dtos/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/dtos/UserDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/entities/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/exceptionhandler/UserExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/exceptionhandler/UserExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/security/CustomUserDetailsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/security/CustomUserDetailsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/security/JwtAuthenticationEntryPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/security/JwtAuthenticationEntryPoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/security/JwtTokenFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/security/JwtTokenFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/security/JwtTokenUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/security/JwtTokenUtil.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/services/Impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/services/Impl/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/services/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/usermanagement/springboot/services/UserService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +55,7 @@
     </option>
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="2OuVk7wW8gEmT0sIuF6YkHJcueF" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />

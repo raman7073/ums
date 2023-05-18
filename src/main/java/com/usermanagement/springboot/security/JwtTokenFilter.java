@@ -14,9 +14,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.usermanagement.springboot.common.Constants.AUTHORIZATION;
+import static com.usermanagement.springboot.common.Constants.BEARER;
+
+/**
+ * Here, this custom filter class extends the @OncePerRequestFilter class to guarantee a single execution per
+ * request.
+ * When it comes into play, the @doFilterInternal() method gets invoked. Here’s how it works:
+ * If the Authorization header of the request doesn’t contain a Bearer token, it continues the
+ * filter chain without updating authentication context.
+ * Else, if the token is not verified, continue the filter chain without updating authentication context.
+ * If the token is verified, update the authentication context with the user details.
+ * In other words, it tells Spring that the user is authenticated, and continue the downstream filters.
+ */
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
-
     @Autowired
     private JwtTokenUtil jwtUtil;
     @Autowired
@@ -27,16 +39,15 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String authorizationHeader = request.getHeader("Authorization");
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
         String token = null;
         String userName = null;
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
 
             token = authorizationHeader.substring(7);
             userName = jwtUtil.extractUsername(token);
         }
-
         if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             UserDetails userDetails = service.loadUserByUsername(userName);

@@ -1,14 +1,15 @@
 package com.usermanagement.springboot.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+import static com.usermanagement.springboot.common.Constants.BEARER;
+
+@Getter
+@Setter
 public class AuthResponseDTO {
+
     private String accessToken;
-    private String tokenType = "Bearer";
+    private String tokenType = BEARER;
 
 }

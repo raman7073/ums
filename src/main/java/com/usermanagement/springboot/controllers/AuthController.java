@@ -1,15 +1,10 @@
 package com.usermanagement.springboot.controllers;
 
-import com.usermanagement.springboot.dtos.AuthRequestDTO;
 import com.usermanagement.springboot.dtos.AuthResponseDTO;
-import com.usermanagement.springboot.security.JwtTokenUtil;
-import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
+import com.usermanagement.springboot.dtos.LoginDTO;
+import com.usermanagement.springboot.services.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,32 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+import static com.usermanagement.springboot.common.Constants.V1_AUTH;
+import static com.usermanagement.springboot.common.Constants.LOGIN;
+
 @RestController
-@AllArgsConstructor
-@RequestMapping("v1/auth")
+@RequestMapping(V1_AUTH)
 public class AuthController {
+   @Autowired
+   private AuthService authService;
+    @PostMapping(LOGIN)
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid LoginDTO loginDTO) {
 
-    private AuthenticationManager authManager;
-    private JwtTokenUtil jwtUtil;
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid AuthRequestDTO authRequestDTO) {
-
-        try {
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                    new UsernamePasswordAuthenticationToken(
-                            authRequestDTO.getUsername(), authRequestDTO.getPassword()
-                    );
-            Authentication authentication = authManager.authenticate(usernamePasswordAuthenticationToken);
-            String accessToken = jwtUtil.generateToken(authRequestDTO.getUsername());
-            AuthResponseDTO authResponseDTO = new AuthResponseDTO();
-            authResponseDTO.setAccessToken(accessToken);
-            return ResponseEntity.ok(authResponseDTO);
-
-        } catch (BadCredentialsException exception) {
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Username Or Password");
-        }
-
+        AuthResponseDTO authResponseDTO =authService.login(loginDTO);
+        return ResponseEntity.ok(authResponseDTO);
     }
 }

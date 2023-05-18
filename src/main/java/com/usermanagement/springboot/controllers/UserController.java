@@ -4,7 +4,7 @@ package com.usermanagement.springboot.controllers;
 import com.usermanagement.springboot.dtos.PasswordDTO;
 import com.usermanagement.springboot.dtos.UserDTO;
 import com.usermanagement.springboot.services.UserService;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +13,12 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
-@AllArgsConstructor
-@RequestMapping("v1/users")
-public class UserController {
+import static com.usermanagement.springboot.common.Constants.*;
 
+@RestController
+@RequestMapping(V1_USERS)
+public class UserController {
+    @Autowired
     private UserService userService;
 
     @PostMapping
@@ -37,15 +38,15 @@ public class UserController {
         return new ResponseEntity<>(userDTOList, HttpStatus.OK);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable("userId") UUID userId) {
+    @GetMapping(VAR_USERID)
+    public ResponseEntity<UserDTO> getUser(@PathVariable(USERID) UUID userId) {
 
         UserDTO userDTO = userService.getUser(userId);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable("userId") UUID userId,
+    @PutMapping(VAR_USERID)
+    public ResponseEntity<UserDTO> updateUser(@PathVariable(USERID) UUID userId,
                                               @RequestBody @Valid UserDTO userDTO) {
 
         userDTO.setUserId(userId);
@@ -53,20 +54,17 @@ public class UserController {
         return new ResponseEntity<>(userDTO1, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<UserDTO> deleteUser(@PathVariable("userId") UUID userId) {
+    @DeleteMapping(VAR_USERID)
+    public ResponseEntity<UserDTO> deleteUser(@PathVariable(USERID) UUID userId) {
 
         userService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/changePassword")
+    @PostMapping(CHANGEPASSWORD)
     public ResponseEntity<String> changePassword(@RequestBody @Valid PasswordDTO passwordDTO) {
 
-        boolean success = userService.changePassword(passwordDTO);
-        if (success) {
-            return ResponseEntity.status(HttpStatus.OK).body("Updated Successfully");
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+         userService.changePassword(passwordDTO);
+         return ResponseEntity.status(HttpStatus.OK).body(UPDATED);
     }
 }

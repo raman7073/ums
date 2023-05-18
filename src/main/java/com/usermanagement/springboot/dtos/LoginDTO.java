@@ -1,10 +1,12 @@
 package com.usermanagement.springboot.dtos;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.NotEmpty;
 
-@Data
-public class AuthRequestDTO {
+@Getter
+@Setter
+public class LoginDTO {
     @NotEmpty
     private String username;
     @NotEmpty

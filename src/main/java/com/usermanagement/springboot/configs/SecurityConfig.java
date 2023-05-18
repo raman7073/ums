@@ -1,32 +1,46 @@
 package com.usermanagement.springboot.configs;
 
-import com.usermanagement.springboot.daos.UserDAO;
 import com.usermanagement.springboot.security.CustomUserDetailsService;
+import com.usermanagement.springboot.security.JwtAuthenticationEntryPoint;
 import com.usermanagement.springboot.security.JwtTokenFilter;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.servlet.http.HttpServletResponse;
+import static com.usermanagement.springboot.common.Constants.LOGIN_API;
+
+/**
+ * Here, @SecurityConfig class is responsible for configuring the security which ensures
+ * that only authenticated users can see the secret greeting
+ * The SecurityConfig class is annotated with @EnableWebSecurity to enable Spring Security’s
+ * web security support and provide the Spring MVC integration. It also exposes four beans to set
+ * some specifics for the web security configuration.
+ * The @SecurityFilterChain bean defines which URL paths should be secured and which should not.
+ * Specifically, the login paths are configured to not require any authentication.
+ * All other paths must be authenticated.
+ *
+ * Inside @SecurityFilterChain , the exception handling code ensures that the server will return
+ * HTTP status 401 (Unauthorized) if any error occurs during authentication process.
+ */
 
 @EnableWebSecurity
 @Configuration
-@AllArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    private UserDAO userDAO;
+public class SecurityConfig {
+    @Autowired
     private CustomUserDetailsService userDetailsService;
+    @Autowired
     private JwtTokenFilter jwtTokenFilter;
+    @Autowired
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -34,36 +48,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        return http
+                .csrf().disable()
+                .cors().disable()
+                .authorizeRequests()
+                .antMatchers(LOGIN_API)
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .and()
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(daoAuthenticationProvider())
+                .build();
     }
 
-    @Override
-    @Bean(BeanIds.AUTHENTICATION_MANAGER)
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration configuration) throws Exception {
 
-        http.csrf().disable();
-        http.cors().disable();
-        http.exceptionHandling().authenticationEntryPoint(
-                (request, response, authException) ->
-                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                                authException.getMessage()
-                        )
-        );
-        http.authorizeRequests()
-                .antMatchers("/v1/auth/login")
-                .permitAll().anyRequest()
-                .authenticated();
-        http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        return configuration.getAuthenticationManager();
     }
 }

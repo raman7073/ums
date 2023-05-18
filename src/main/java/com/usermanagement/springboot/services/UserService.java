@@ -15,7 +15,7 @@ public interface UserService {
 
     public boolean deleteUser(UUID userId);
 
-    public boolean changePassword(PasswordDTO passwordDTO);
+    public void changePassword(PasswordDTO passwordDTO);
 
     public List<UserDTO> getAllUser();
 }
