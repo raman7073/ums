@@ -1,9 +1,6 @@
 package com.usermanagement.springboot.exceptionhandler;
 
-import com.usermanagement.springboot.exceptions.ErrorDetails;
-import com.usermanagement.springboot.exceptions.InvalidUserRequestBodyException;
-import com.usermanagement.springboot.exceptions.ResourceNotFoundException;
-import com.usermanagement.springboot.exceptions.UserNameAlreadyExistException;
+import com.usermanagement.springboot.exceptions.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.usermanagement.springboot.common.Constants.*;
+
 @ControllerAdvice
 public class UserExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -29,43 +28,58 @@ public class UserExceptionHandler {
                 LocalDateTime.now(),
                 exception.getMessage(),
                 webRequest.getDescription(false),
-                "RESOURCE_NOT_FOUND"
+                RESOURCE_NOT_FOUND
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UserNameAlreadyExistException.class)
-    public ResponseEntity<ErrorDetails> handleUserNameAlreadyExistException(UserNameAlreadyExistException exception,
-                                                                            WebRequest webRequest) {
+    public ResponseEntity<ErrorDetails> handleUserNameAlreadyExistException(
+            UserNameAlreadyExistException exception,
+            WebRequest webRequest) {
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 exception.getMessage(),
                 webRequest.getDescription(false),
-                "USER_NAME_ALREADY_EXIST"
+                USER_NAME_ALREADY_EXIST
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidUserRequestBodyException.class)
-    public ResponseEntity<ErrorDetails> handleInvalidUserRequestBodyException(InvalidUserRequestBodyException exception,
-                                                                              WebRequest webRequest) {
+    public ResponseEntity<ErrorDetails> handleInvalidUserRequestBodyException(
+            InvalidUserRequestBodyException exception,
+            WebRequest webRequest) {
 
         ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
                 exception.getMessage(),
                 webRequest.getDescription(false),
-                "INVALID_REQUEST_BODY"
+                INVALID_REQUEST_BODY
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidUsernameOrPasswordException.class)
+    public ResponseEntity<ErrorDetails> handleInvalidUsernameOrPasswordException(
+            InvalidUsernameOrPasswordException exception,
+            WebRequest webRequest) {
+
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                INVALID_USERNAME_OR_PASSWORD
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDetails> handleAllOtherException(Exception exception, WebRequest webRequest) {
+    public ResponseEntity<ErrorDetails> handleAllOtherException(Exception exception,
+                                                                WebRequest webRequest) {
 
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 exception.getMessage(),
                 webRequest.getDescription(false),
-                "INTERNAL_SERVER_ERROR"
+                INTERNAL_SERVER_ERROR
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -86,6 +100,4 @@ public class UserExceptionHandler {
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
-
-
 }
