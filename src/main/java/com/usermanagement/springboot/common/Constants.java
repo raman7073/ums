@@ -15,6 +15,7 @@ public class Constants {
     public static final String LAST_NAME = "last_name";
     public static final String USERID = "userId";
     public static final String UPDATED = "UPDATED_SUCCESSFULLY";
+    public static final String DELETED = "DELETED_SUCCESSFULLY";
     public static final String CHANGEPASSWORD = "/change-password";
     public static final String FINDALLQUERY = "SELECT * FROM users u WHERE u.deleted = false";
     public static final String SQL_ON_DELETE_QUERY =

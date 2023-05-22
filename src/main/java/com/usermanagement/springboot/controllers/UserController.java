@@ -42,6 +42,9 @@ public class UserController {
     public ResponseEntity<UserDTO> getUser(@PathVariable(USERID) UUID userId) {
 
         UserDTO userDTO = userService.getUser(userId);
+        if(userDTO == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
@@ -55,10 +58,10 @@ public class UserController {
     }
 
     @DeleteMapping(VAR_USERID)
-    public ResponseEntity<UserDTO> deleteUser(@PathVariable(USERID) UUID userId) {
+    public ResponseEntity<String> deleteUser(@PathVariable(USERID) UUID userId) {
 
         userService.deleteUser(userId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(DELETED);
     }
 
     @PostMapping(CHANGEPASSWORD)

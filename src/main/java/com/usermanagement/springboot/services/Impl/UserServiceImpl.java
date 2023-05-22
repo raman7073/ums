@@ -31,15 +31,15 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
         user.convert(userDTO);
-        if (userDao.existsByUsername(user.getUsername())) {
+        if (user.getUsername() != null && userDao.existsByUsername(user.getUsername())) {
             throw new UserNameAlreadyExistException(USER_NAME_ALREADY_EXIST);
         }
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
-        user.setPassword(encryptedPassword);
-        return UserDTO.builder()
-                .build()
-                .convert(userDao.save(user));
+        if (user.getPassword() != null) {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        }
+        userDao.save(user);
+        return userDTO.convert(user);
     }
 
     @Override
@@ -47,10 +47,10 @@ public class UserServiceImpl implements UserService {
 
         List<User> userList = userDao.findAll();
         List<UserDTO> userDTOList = new ArrayList<>();
+        UserDTO userDTO = new UserDTO();
         userList.forEach(user -> {
             userDTOList.add(
-                    UserDTO.builder()
-                            .build().convert(user)
+                    userDTO.convert(user)
             );
         });
         return userDTOList;
@@ -61,6 +61,7 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
         user.convert(userDTO);
+
         Optional<User> userDb = userDao.findUserByUsername(user.getUsername());
         Optional<User> getUser = Optional.ofNullable(userDao.findById(user.getUserId()).
                 orElseThrow(
@@ -76,14 +77,13 @@ public class UserServiceImpl implements UserService {
         User updateUser = getUser.get();
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
+        updateUser.setUserId(user.getUserId());
         updateUser.setUsername(user.getUsername());
         updateUser.setPassword(encryptedPassword);
         updateUser.setFirstName(user.getFirstName());
         updateUser.setLastName(user.getLastName());
         updateUser.setRole(user.getRole());
-        return UserDTO.builder()
-                .build()
-                .convert(userDao.save(updateUser));
+        return  userDTO.convert(userDao.save(updateUser));
     }
 
     @Override
@@ -97,19 +97,17 @@ public class UserServiceImpl implements UserService {
                                         String.valueOf(userId))
                         )
                 );
-        return UserDTO.builder()
-                .build()
-                .convert(user.get());
+        UserDTO userDTO = new UserDTO();
+        return userDTO.convert(user.get());
     }
 
     @Override
-    public boolean deleteUser(UUID userId) {
+    public void deleteUser(UUID userId) {
 
         userDao.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException(USER, USERID, String.valueOf(userId))
         );
         userDao.deleteById(userId);
-        return true;
     }
 
     @Override

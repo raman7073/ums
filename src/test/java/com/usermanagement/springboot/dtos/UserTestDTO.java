@@ -1,8 +1,10 @@
 package com.usermanagement.springboot.dtos;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.usermanagement.springboot.entities.User;
 import lombok.*;
+import org.springframework.boot.jackson.JsonMixin;
 import org.springframework.core.convert.converter.Converter;
 
 import javax.validation.constraints.NotEmpty;
@@ -17,7 +19,8 @@ import static com.usermanagement.springboot.common.Constants.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO implements Converter<User, UserDTO> {
+@JsonMixin(UserDTO.class)
+public class UserTestDTO implements Converter<User, UserTestDTO> {
 
     private UUID userId;
 
@@ -25,7 +28,7 @@ public class UserDTO implements Converter<User, UserDTO> {
     private String username;
 
     @NotEmpty(message = INVALID_PASSWORD)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String password;
 
     @NotEmpty(message = INVALID_FIRST_NAME)
@@ -44,20 +47,21 @@ public class UserDTO implements Converter<User, UserDTO> {
     private LocalDateTime deletedAt;
 
     @Override
-    public UserDTO convert(User user) {
+    public UserTestDTO convert(User user) {
 
-                this.setUserId(user.getUserId());
-                this.setUsername(user.getUsername());
-                this.setPassword(user.getPassword());
-                this.setUserId(user.getUserId());
-                this.setFirstName(user.getFirstName());
-                this.setLastName(user.getLastName());
-                this.setRole(user.getRole());
-                this.setCreatedAt(user.getCreatedAt());
-                this.setUpdatedAt(user.getUpdatedAt());
-                this.setDeletedAt(user.getDeletedAt());
-                return this;
+        this.setUserId(user.getUserId());
+        this.setUsername(user.getUsername());
+        this.setPassword(user.getPassword());
+        this.setUserId(user.getUserId());
+        this.setFirstName(user.getFirstName());
+        this.setLastName(user.getLastName());
+        this.setRole(user.getRole());
+        this.setCreatedAt(user.getCreatedAt());
+        this.setUpdatedAt(user.getUpdatedAt());
+        this.setDeletedAt(user.getDeletedAt());
+        return this;
     }
 
 
 }
+

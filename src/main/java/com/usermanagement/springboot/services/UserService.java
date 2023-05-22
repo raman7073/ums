@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    public UserDTO createUser(UserDTO userDTO);
+    UserDTO createUser(UserDTO userDTO);
 
-    public UserDTO updateUser(UserDTO user);
+    UserDTO updateUser(UserDTO user);
 
-    public UserDTO getUser(UUID userId);
+    UserDTO getUser(UUID userId);
 
-    public boolean deleteUser(UUID userId);
+    void deleteUser(UUID userId);
 
-    public void changePassword(PasswordDTO passwordDTO);
+    void changePassword(PasswordDTO passwordDTO);
 
-    public List<UserDTO> getAllUser();
+    List<UserDTO> getAllUser();
 }

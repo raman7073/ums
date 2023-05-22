@@ -1,7 +1,6 @@
 package com.usermanagement.springboot.exceptionhandler;
 
 import com.usermanagement.springboot.exceptions.*;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -43,7 +42,7 @@ public class UserExceptionHandler {
                 webRequest.getDescription(false),
                 USER_NAME_ALREADY_EXIST
         );
-        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(InvalidUserRequestBodyException.class)
@@ -86,8 +85,6 @@ public class UserExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
-                                                               HttpHeaders headers,
-                                                               HttpStatus status,
                                                                WebRequest request) {
 
         Map<String, String> errors = new HashMap<>();
@@ -98,6 +95,6 @@ public class UserExceptionHandler {
             String message = error.getDefaultMessage();
             errors.put(fieldName, message);
         });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errors,HttpStatus.BAD_REQUEST);
     }
 }

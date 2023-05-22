@@ -2,8 +2,7 @@ package com.usermanagement.springboot.entities;
 
 
 import com.usermanagement.springboot.dtos.UserDTO;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -11,7 +10,6 @@ import org.hibernate.annotations.Where;
 import org.springframework.core.convert.converter.Converter;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -20,6 +18,9 @@ import static com.usermanagement.springboot.common.Constants.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Entity
 @Table(name = USERS)
 @SQLDelete(sql = SQL_ON_DELETE_QUERY)
@@ -57,16 +58,20 @@ public class User implements Converter<UserDTO, User> {
     private boolean deleted = Boolean.FALSE;
 
     @Column
-    private Timestamp deletedAt;
+    private LocalDateTime deletedAt;
 
     @Override
     public User convert(UserDTO userDTO) {
 
+        this.setUserId(userDTO.getUserId());
         this.setUsername(userDTO.getUsername());
         this.setPassword(userDTO.getPassword());
         this.setFirstName(userDTO.getFirstName());
         this.setLastName(userDTO.getLastName());
         this.setRole(userDTO.getRole());
+        this.setCreatedAt(userDTO.getCreatedAt());
+        this.setUpdatedAt(userDTO.getUpdatedAt());
+        this.setDeletedAt(userDTO.getDeletedAt());
         return this;
     }
 }
