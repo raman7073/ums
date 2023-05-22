@@ -10,7 +10,6 @@ import com.usermanagement.springboot.services.Impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,7 +31,6 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class UserServiceTests {
     @Mock
     private UserDAO userDAO;
@@ -42,15 +40,15 @@ public class UserServiceTests {
     private User user;
     private UserDTO userDTO;
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
     @BeforeEach
     public void setup() {
 
         user = new User();
-        bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        user.setUsername("geekybhai");
-        user.setPassword("admin123");
+        UUID userId = UUID.randomUUID();
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        user.setUsername("geeky");
+        user.setUserId(userId);
+        user.setPassword(bCryptPasswordEncoder.encode("admin123"));
         user.setFirstName("Raman");
         user.setLastName("Mehta");
         user.setRole("Admin");
@@ -59,6 +57,7 @@ public class UserServiceTests {
     }
 
     @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
     public void givenUserEntity_whenSaveUser_thenReturnUserEntity() {
 
         /* given */
@@ -77,13 +76,10 @@ public class UserServiceTests {
 
         /* given */
         given(userDAO.existsByUsername(user.getUsername())).willReturn(true);
-        given(userDAO.save(user)).willReturn(user);
 
         /* when */
         assertThrows(UserNameAlreadyExistException.class,
-                () -> {
-                    userService.createUser(userDTO);
-                }
+                () -> userService.createUser(userDTO)
         );
 
         /* then */
@@ -106,67 +102,6 @@ public class UserServiceTests {
     }
 
     @Test
-    public void givenUserEntity_whenUpdateUser_thenReturnUpdatedUser() {
-
-        /* given  */
-        UUID userId = UUID.randomUUID();
-        user.setUserId(userId);
-        userDTO.setUserId(userId);
-        given(userDAO.findUserByUsername(user.getUsername())).willReturn(Optional.of(user));
-        given(userDAO.findById(userId)).willReturn(Optional.of(user));
-        userDTO.setUsername("advait");
-        userDTO.setFirstName("Ram");
-        given(userDAO.save(user)).willReturn(user);
-
-        /* when */
-        UserDTO updatedUser = userService.updateUser(userDTO);
-
-        /* then */
-        assertThat(updatedUser.getUsername()).isEqualTo("advait");
-        assertThat(updatedUser.getFirstName()).isEqualTo("Ram");
-    }
-
-    @Test
-    public void givenInvalid_whenUpdateUser_thenThrowsException() {
-
-        /* given */
-        UUID userId = UUID.randomUUID();
-        given(userDAO.findUserByUsername(user.getUsername()))
-                .willReturn(Optional.of(user));
-        given(userDAO.findById(userId)).willReturn(Optional.empty());
-
-        /* when */
-        assertThrows(ResourceNotFoundException.class,
-                () -> {
-                    userService.updateUser(userDTO);
-                }
-        );
-
-        /* then */
-        verify(userDAO, never()).save(any(User.class));
-    }
-
-    @Test
-    public void givenExistingUsername_whenUpdateUser_thenThrowsException() {
-
-        /* given */
-        user.setUserId(UUID.randomUUID());
-        userDTO.setUserId(UUID.randomUUID());
-        given(userDAO.findUserByUsername(userDTO.getUsername()))
-                .willReturn(Optional.of(user));
-        given(userDAO.findById(userDTO.getUserId())).willReturn(Optional.of(user));
-
-        /* when */
-        assertThrows(UserNameAlreadyExistException.class, () -> {
-
-            userService.updateUser(userDTO);
-        });
-
-        /* then */
-        verify(userDAO, never()).save(any(User.class));
-    }
-
-    @Test
     public void givenEmptyUserList_whenGetAllUsers_thenReturnEmptyUserDTOList() {
 
         /* given */
@@ -181,14 +116,78 @@ public class UserServiceTests {
     }
 
     @Test
-    public void givenUserId_whenGetByUserId_thenReturnUserEntity() {
+    public void givenUserEntity_whenUpdateUser_thenReturnUpdatedUser() {
+
+        /* given  */
+        userDTO.setUsername("advt");
+        userDTO.setFirstName("Ram");
+        user.setUsername("advt");
+        user.setFirstName("Ram");
+        given(userDAO.findUserByUsername(user.getUsername())).willReturn(Optional.of(user));
+        given(userDAO.findById(userDTO.getUserId())).willReturn(Optional.of(user));
+        given(userDAO.save(user)).willReturn(user);
+
+        /* when */
+        UserDTO updatedUser = userService.updateUser(userDTO);
+
+        /* then */
+        assertThat(updatedUser.getUsername()).isEqualTo("advt");
+        assertThat(updatedUser.getFirstName()).isEqualTo("Ram");
+    }
+
+    @Test
+    public void givenInvalidId_whenUpdateUser_thenThrowsException() {
 
         /* given */
         UUID userId = UUID.randomUUID();
-        BDDMockito.given(userDAO.findById(userId)).willReturn(Optional.of(user));
+        userDTO.setUserId(userId);
+        given(userDAO.findById(userId)).willReturn(Optional.empty());
 
         /* when */
-        UserDTO savedUser = userService.getUser(userId);
+        assertThrows(ResourceNotFoundException.class,
+                () -> userService.updateUser(userDTO)
+        );
+
+        /* then */
+        verify(userDAO, never()).save(any(User.class));
+    }
+
+    @Test
+    public void givenExistingUsername_whenUpdateUser_thenThrowsException() {
+
+        /* given */
+        UUID userId1 = UUID.randomUUID();
+        User user1 = new User();
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        user1.setUserId(userId1);
+        user1.setUsername("geeky");
+        user1.setPassword(bCryptPasswordEncoder.encode("admin123"));
+        user1.setFirstName("Aman");
+        user1.setLastName("Mehta");
+        user1.setRole("Admin");
+        UserDTO userDTO1 = new UserDTO();
+        userDTO1.convert(user1);
+        given(userDAO.findUserByUsername(userDTO.getUsername()))
+                .willReturn(Optional.of(user));
+        given(userDAO.findById(userDTO1.getUserId())).willReturn(Optional.of(user1));
+
+        /* when */
+        assertThrows(UserNameAlreadyExistException.class,
+                () -> userService.updateUser(userDTO1)
+        );
+
+        /* then */
+        verify(userDAO, never()).save(any(User.class));
+    }
+
+    @Test
+    public void givenUserId_whenGetByUserId_thenReturnUserEntity() {
+
+        /* given */
+        given(userDAO.findById(user.getUserId())).willReturn(Optional.of(user));
+
+        /* when */
+        UserDTO savedUser = userService.getUser(user.getUserId());
 
         /* then */
         assertThat(savedUser).isNotNull();
@@ -199,12 +198,12 @@ public class UserServiceTests {
 
         /* given */
         UUID userId = UUID.randomUUID();
-        BDDMockito.given(userDAO.findById(userId)).willReturn(Optional.empty());
+        given(userDAO.findById(userId)).willReturn(Optional.empty());
 
         /* when */
-        assertThrows(ResourceNotFoundException.class, () -> {
-            userService.getUser(userId);
-        });
+        assertThrows(ResourceNotFoundException.class,
+                () -> userService.getUser(userId)
+        );
 
         /* then */
         verify(userDAO, times(1)).findById(userId);
@@ -214,15 +213,14 @@ public class UserServiceTests {
     public void givenUserId_whenDeleteUser_thenNothing() {
 
         /* given */
-        UUID userId = UUID.randomUUID();
-        given(userDAO.findById(userId)).willReturn(Optional.of(user));
-        willDoNothing().given(userDAO).deleteById(userId);
+        given(userDAO.findById(user.getUserId())).willReturn(Optional.of(user));
+        willDoNothing().given(userDAO).deleteById(user.getUserId());
 
         /* when */
-        userService.deleteUser(userId);
+        userService.deleteUser(user.getUserId());
 
         /* then */
-        verify(userDAO, times(1)).deleteById(userId);
+        verify(userDAO, times(1)).deleteById(user.getUserId());
     }
 
     @Test
@@ -233,9 +231,9 @@ public class UserServiceTests {
         given(userDAO.findById(userId)).willReturn(Optional.empty());
 
         /* when */
-        assertThrows(ResourceNotFoundException.class, () -> {
-            userService.deleteUser(userId);
-        });
+        assertThrows(ResourceNotFoundException.class,
+                () -> userService.deleteUser(userId)
+        );
 
         /*then*/
         verify(userDAO, times(0)).deleteById(userId);
