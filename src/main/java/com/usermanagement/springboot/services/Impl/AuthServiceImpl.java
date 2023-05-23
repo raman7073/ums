@@ -5,8 +5,6 @@ import com.usermanagement.springboot.dtos.LoginDTO;
 import com.usermanagement.springboot.exceptions.InvalidUsernameOrPasswordException;
 import com.usermanagement.springboot.security.JwtTokenUtil;
 import com.usermanagement.springboot.services.AuthService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -19,7 +17,6 @@ public class AuthServiceImpl implements AuthService {
     private AuthenticationManager authManager;
     @Autowired
     private JwtTokenUtil jwtUtil;
-    private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     @Override
     public AuthResponseDTO login(LoginDTO loginDTO) {

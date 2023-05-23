@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
         updateUser.setFirstName(user.getFirstName());
         updateUser.setLastName(user.getLastName());
         updateUser.setRole(user.getRole());
-        return  userDTO.convert(userDao.save(updateUser));
+        return userDTO.convert(userDao.save(updateUser));
     }
 
     @Override

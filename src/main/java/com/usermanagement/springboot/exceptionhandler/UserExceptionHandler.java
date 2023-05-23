@@ -45,19 +45,6 @@ public class UserExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(InvalidUserRequestBodyException.class)
-    public ResponseEntity<ErrorDetails> handleInvalidUserRequestBodyException(
-            InvalidUserRequestBodyException exception,
-            WebRequest webRequest) {
-
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
-                exception.getMessage(),
-                webRequest.getDescription(false),
-                INVALID_REQUEST_BODY
-        );
-        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(InvalidUsernameOrPasswordException.class)
     public ResponseEntity<ErrorDetails> handleInvalidUsernameOrPasswordException(
             InvalidUsernameOrPasswordException exception,

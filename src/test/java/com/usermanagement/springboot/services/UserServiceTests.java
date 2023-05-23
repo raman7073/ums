@@ -2,6 +2,7 @@ package com.usermanagement.springboot.services;
 
 
 import com.usermanagement.springboot.daos.UserDAO;
+import com.usermanagement.springboot.dtos.PasswordDTO;
 import com.usermanagement.springboot.dtos.UserDTO;
 import com.usermanagement.springboot.entities.User;
 import com.usermanagement.springboot.exceptions.ResourceNotFoundException;
@@ -15,6 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collections;
@@ -23,8 +27,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -34,6 +37,8 @@ import static org.mockito.Mockito.*;
 public class UserServiceTests {
     @Mock
     private UserDAO userDAO;
+    @Mock
+    private Authentication authentication;
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -58,7 +63,7 @@ public class UserServiceTests {
 
     @Test
     @MockitoSettings(strictness = Strictness.LENIENT)
-    public void givenUserEntity_whenSaveUser_thenReturnUserEntity() {
+    public void testCreateUserEntity_whenSaveUser_thenReturnUserEntity() {
 
         /* given */
         given(userDAO.existsByUsername(user.getUsername())).willReturn(false);
@@ -72,7 +77,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void givenExistingUserName_whenSaveUser_thenThrowsException() {
+    public void testCreateUserEntity_givenExistingUserName_whenSaveUser_thenThrowsException() {
 
         /* given */
         given(userDAO.existsByUsername(user.getUsername())).willReturn(true);
@@ -87,7 +92,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void givenUsersList_whenGetAllUsers_thenReturnUserDTOSList() {
+    public void testGetAllUser_givenUsersList_whenGetAllUsers_thenReturnUserDTOSList() {
 
         /* given  */
         User user1 = new User();
@@ -102,7 +107,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void givenEmptyUserList_whenGetAllUsers_thenReturnEmptyUserDTOList() {
+    public void testGetAllUser_givenEmptyUserList_whenGetAllUsers_thenReturnEmptyUserDTOList() {
 
         /* given */
         given(userDAO.findAll()).willReturn(Collections.emptyList());
@@ -116,7 +121,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void givenUserEntity_whenUpdateUser_thenReturnUpdatedUser() {
+    public void testUpdateUser_givenUserEntity_whenUpdateUser_thenReturnUpdatedUser() {
 
         /* given  */
         userDTO.setUsername("advt");
@@ -136,7 +141,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void givenInvalidId_whenUpdateUser_thenThrowsException() {
+    public void testUpdateUser_givenInvalidId_whenUpdateUser_thenThrowsException() {
 
         /* given */
         UUID userId = UUID.randomUUID();
@@ -153,7 +158,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void givenExistingUsername_whenUpdateUser_thenThrowsException() {
+    public void testUpdateUser_givenExistingUsername_whenUpdateUser_thenThrowsException() {
 
         /* given */
         UUID userId1 = UUID.randomUUID();
@@ -181,7 +186,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void givenUserId_whenGetByUserId_thenReturnUserEntity() {
+    public void testGetUser_givenUserId_whenGetByUserId_thenReturnUserEntity() {
 
         /* given */
         given(userDAO.findById(user.getUserId())).willReturn(Optional.of(user));
@@ -194,7 +199,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void givenInvalidUserId_whenGetByUserId_thenThrowsException() {
+    public void testGetUser_givenInvalidUserId_whenGetByUserId_thenThrowsException() {
 
         /* given */
         UUID userId = UUID.randomUUID();
@@ -210,7 +215,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void givenUserId_whenDeleteUser_thenNothing() {
+    public void testDeleteUser_givenUserId_whenDeleteUser_thenNothing() {
 
         /* given */
         given(userDAO.findById(user.getUserId())).willReturn(Optional.of(user));
@@ -224,7 +229,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void givenInvalidUserId_whenDeleteUser_thenThrowsException() {
+    public void testDeleteUser_givenInvalidUserId_whenDeleteUser_thenThrowsException() {
 
         /* given */
         UUID userId = UUID.randomUUID();
@@ -237,5 +242,55 @@ public class UserServiceTests {
 
         /*then*/
         verify(userDAO, times(0)).deleteById(userId);
+    }
+
+    @Test
+    public void testChangePassword_givenPasswordDTO_whenChangePassword_thenSaveUserWithNewPassword() {
+
+        /* given */
+        String username = "tester";
+        String oldPassword = "oldPassword";
+        String newPassword = "newPassword";
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        given(authentication.getName()).willReturn(username);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        User existingUser = new User();
+        existingUser.setUsername(username);
+        existingUser.setPassword(passwordEncoder.encode(oldPassword));
+        given(userDAO.findUserByUsername(username)).willReturn(Optional.of(existingUser));
+
+        /* when */
+        PasswordDTO passwordDTO = new PasswordDTO(oldPassword, newPassword);
+        userService.changePassword(passwordDTO);
+
+        /* then */
+        verify(userDAO, times(1)).findUserByUsername(username);
+        verify(userDAO, times(1)).save(existingUser);
+        assertTrue(passwordEncoder.matches(newPassword, existingUser.getPassword()));
+    }
+
+    @Test
+    public void testChangePassword_givenInvalidOldPassword_whenChangePassword_thenThrowException() {
+
+        /* given */
+        String username = "tester";
+        String oldPassword = "wrongPassword";
+        String newPassword = "newPassword";
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = passwordEncoder.encode("admin123");
+        given(authentication.getName()).willReturn(username);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        User existingUser = new User();
+        existingUser.setUsername(username);
+        existingUser.setPassword(encodedPassword);
+        given(userDAO.findUserByUsername(username)).willReturn(Optional.of(existingUser));
+
+        /* when */
+        PasswordDTO passwordDTO = new PasswordDTO(oldPassword, newPassword);
+        assertThrows(BadCredentialsException.class, () -> userService.changePassword(passwordDTO));
+
+        /* then */
+        verify(userDAO, times(1)).findUserByUsername(username);
+        verify(userDAO, never()).save(existingUser);
     }
 }
