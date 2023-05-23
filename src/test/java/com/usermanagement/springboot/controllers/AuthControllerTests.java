@@ -3,15 +3,16 @@ package com.usermanagement.springboot.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.usermanagement.springboot.dtos.AuthResponseDTO;
 import com.usermanagement.springboot.dtos.LoginDTO;
+import com.usermanagement.springboot.exceptions.InvalidUsernameOrPasswordException;
 import com.usermanagement.springboot.security.JwtTokenFilter;
 import com.usermanagement.springboot.services.AuthService;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -50,11 +51,16 @@ public class AuthControllerTests {
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
                 .post("/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
                 .content(objectMapper.writeValueAsString(loginDTO)));
 
         /* then */
-        response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(print());
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken",
+                        CoreMatchers.is(expectedResponseDTO.getAccessToken())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.tokenType",
+                        CoreMatchers.is(expectedResponseDTO.getTokenType())));
     }
 
 
@@ -63,17 +69,19 @@ public class AuthControllerTests {
 
         /* given */
         LoginDTO loginDTO = new LoginDTO("tester", "wrongPassword");
-        given(authService.login(loginDTO)).willThrow(BadCredentialsException.class);
+        given(authService.login(loginDTO)).willThrow(InvalidUsernameOrPasswordException.class);
 
         /* when */
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
                 .post("/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
                 .content(objectMapper.writeValueAsString(loginDTO)));
 
         /* then */
-        response.andExpect(MockMvcResultMatchers
-                .status().isUnauthorized()).andDo(print());
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isUnauthorized());
     }
 
     @Test
@@ -87,11 +95,13 @@ public class AuthControllerTests {
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
                 .post("/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
                 .content(objectMapper.writeValueAsString(loginDTO)));
 
         /* then */
-        response.andExpect(MockMvcResultMatchers
-                .status().isBadRequest()).andDo(print());
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                .status().isBadRequest());
     }
 }
 

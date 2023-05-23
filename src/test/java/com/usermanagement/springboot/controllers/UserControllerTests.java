@@ -2,6 +2,7 @@ package com.usermanagement.springboot.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.usermanagement.springboot.daos.UserDAO;
+import com.usermanagement.springboot.dtos.PasswordDTO;
 import com.usermanagement.springboot.dtos.UserDTO;
 import com.usermanagement.springboot.exceptions.ResourceNotFoundException;
 import com.usermanagement.springboot.exceptions.UserNameAlreadyExistException;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -75,12 +77,13 @@ public class UserControllerTests {
                 .perform(MockMvcRequestBuilders
                         .post("/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
                         .content(objectMapper.writeValueAsString(userDTO)));
 
         /* then */
-        response.andExpect(MockMvcResultMatchers
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
                         .status().isCreated())
-                .andDo(print())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.username",
                         CoreMatchers.is(userDTO.getUsername())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.password",
@@ -103,11 +106,13 @@ public class UserControllerTests {
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
                 .post("/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
                 .content(objectMapper.writeValueAsString(userDTO))
         );
         /* then */
-        response.andExpect(MockMvcResultMatchers
-                .status().isConflict());
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isConflict());
     }
 
     @Test
@@ -121,11 +126,13 @@ public class UserControllerTests {
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
                 .post("/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
                 .content(objectMapper.writeValueAsString(userDTO))
         );
         /* then */
-        response.andExpect(MockMvcResultMatchers
-                .status().isBadRequest());
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
     }
 
     @Test
@@ -145,11 +152,14 @@ public class UserControllerTests {
         given(userService.getAllUser()).willReturn(userDTOList);
 
         /* when */
-        ResultActions response = mockMvc.perform(get("/v1/users"));
+        ResultActions response = mockMvc.perform(
+                get("/v1/users")
+                        .characterEncoding("utf-8")
+        );
 
         /* then */
-        response.andExpect(status().isOk())
-                .andDo(print())
+        response.andDo(print())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()",
                         is(userDTOList.size())));
 
@@ -164,10 +174,14 @@ public class UserControllerTests {
         given(userService.getAllUser()).willReturn(Collections.emptyList());
 
         /* when */
-        ResultActions response = mockMvc.perform(get("/v1/users"));
+        ResultActions response = mockMvc.perform(
+                get("/v1/users")
+                        .characterEncoding("utf-8")
+        );
 
         /* then */
-        response.andExpect(status().isNoContent());
+        response.andDo(print())
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -179,11 +193,14 @@ public class UserControllerTests {
         given(userService.getUser(userId)).willReturn(userDTO);
 
         /* when */
-        ResultActions response = mockMvc.perform(get("/v1/users/{userId}", userId));
+        ResultActions response = mockMvc.perform(
+                get("/v1/users/{userId}", userId)
+                        .characterEncoding("utf-8")
+        );
 
         /* then */
-        response.andExpect(status().isOk())
-                .andDo(print())
+        response.andDo(print())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.username",
                         CoreMatchers.is(userDTO.getUsername())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.password",
@@ -204,11 +221,14 @@ public class UserControllerTests {
         given(userService.getUser(userId)).willReturn(null);
 
         /* when */
-        ResultActions response = mockMvc.perform(get("/v1/users/{userId}", userId));
+        ResultActions response = mockMvc.perform(
+                get("/v1/users/{userId}", userId)
+                        .characterEncoding("utf-8")
+        );
 
         /* then */
-        response.andExpect(status().isNotFound())
-                .andDo(print());
+        response.andDo(print())
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -217,6 +237,7 @@ public class UserControllerTests {
         /* given */
         UUID userId = UUID.randomUUID();
         userDTO.setUserId(userId);
+        userDTO.setUsername("advt");
         given(userService.updateUser(ArgumentMatchers.any(UserDTO.class)))
                 .willAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
@@ -225,10 +246,12 @@ public class UserControllerTests {
                 .perform(MockMvcRequestBuilders
                         .put("/v1/users/{userId}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
                         .content(objectMapper.writeValueAsString(userDTO)));
 
         /* then */
-        response.andExpect(MockMvcResultMatchers
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
                         .status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.username",
                         CoreMatchers.is(userDTO.getUsername())))
@@ -256,11 +279,13 @@ public class UserControllerTests {
                 .perform(MockMvcRequestBuilders
                         .put("/v1/users/{userId}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
                         .content(objectMapper.writeValueAsString(userDTO)));
 
         /* then */
-        response.andExpect(MockMvcResultMatchers
-                .status().isBadRequest()).andDo(print());
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
     }
 
     @Test
@@ -277,11 +302,13 @@ public class UserControllerTests {
                 .perform(MockMvcRequestBuilders
                         .put("/v1/users/{userId}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
                         .content(objectMapper.writeValueAsString(userDTO)));
 
         /* then */
-        response.andExpect(MockMvcResultMatchers
-                .status().isBadRequest()).andDo(print());
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
     }
 
     @Test
@@ -292,12 +319,14 @@ public class UserControllerTests {
         willDoNothing().given(userService).deleteUser(userId);
 
         /* when */
-        ResultActions response = mockMvc.perform(delete("/v1/users/{userId}",
-                userId));
+        ResultActions response = mockMvc.perform(
+                delete("/v1/users/{userId}", userId)
+                        .characterEncoding("utf-8")
+        );
 
         /* then */
-        response.andExpect(status().isOk())
-                .andDo(print());
+        response.andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -305,15 +334,77 @@ public class UserControllerTests {
 
         /* given */
         UUID userId = UUID.randomUUID();
-        //given(userService)..willThrow(ResourceNotFoundException.class);
         willThrow(ResourceNotFoundException.class).given(userService).deleteUser(userId);
 
         /* when */
-        ResultActions response = mockMvc.perform(delete("/v1/users/{userId}",
-                userId));
+        ResultActions response = mockMvc.perform(
+                delete("/v1/users/{userId}", userId)
+                        .characterEncoding("utf-8")
+        );
 
         /* then */
-        response.andExpect(status().isNotFound())
-                .andDo(print());
+        response.andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testChangepassword_whenChangePassword_thenReturnNothing() throws Exception {
+
+        /* given */
+        PasswordDTO passwordDTODTO = new PasswordDTO("oldPassword", "newPassword");
+        willDoNothing().given(userService).changePassword(any(PasswordDTO.class));
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users/change-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(passwordDTODTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testChangepassword_givenInvalidOldPassword_whenChangePassword_thenThrowsException()
+            throws Exception {
+
+        /* given */
+        PasswordDTO passwordDTODTO = new PasswordDTO("oldPassword", "newPassword");
+        willThrow(BadCredentialsException.class).given(userService).changePassword(any(PasswordDTO.class));
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users/change-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(passwordDTODTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void testChangepassword_givenInvalidArgs_whenChangePassword_thenThrowsException()
+            throws Exception {
+
+        /* given */
+        PasswordDTO passwordDTODTO = new PasswordDTO("", "newPassword");
+        willThrow(NullPointerException.class)
+                .given(userService)
+                .changePassword(any(PasswordDTO.class));
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users/change-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(passwordDTODTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }

@@ -21,7 +21,7 @@ public class Constants {
     public static final String SQL_ON_DELETE_QUERY =
             "UPDATE users SET deleted = true ,deleted_at= CURRENT_TIMESTAMP WHERE id=?";
     public static final String BEARER = "Bearer ";
-    public static final String INVALID = "INVALID_USERNAME_OR_PASSWORD";
+    public static final String BAD_CREDENTIALS= "BAD_CREDENTIALS";
     public static final String INVALID_USERNAME = "USERNAME_NULL_OR_EMPTY";
     public static final String INVALID_PASSWORD = "PASSWORD_NULL_OR_EMPTY";
     public static final String INVALID_FIRST_NAME = "FIRST_NAME_NULL_OR_EMPTY";

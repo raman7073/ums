@@ -3,6 +3,7 @@ package com.usermanagement.springboot.exceptionhandler;
 import com.usermanagement.springboot.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -54,6 +55,18 @@ public class UserExceptionHandler {
                 exception.getMessage(),
                 webRequest.getDescription(false),
                 INVALID_USERNAME_OR_PASSWORD
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorDetails> handleBadCredentialsException(
+            BadCredentialsException exception,
+            WebRequest webRequest) {
+
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                BAD_CREDENTIALS
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
