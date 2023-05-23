@@ -7,6 +7,7 @@ import com.usermanagement.springboot.exceptions.InvalidUsernameOrPasswordExcepti
 import com.usermanagement.springboot.security.JwtTokenFilter;
 import com.usermanagement.springboot.services.AuthService;
 import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -37,12 +38,17 @@ public class AuthControllerTests {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private LoginDTO loginDTO;
+    @BeforeEach
+    public void setup(){
+        loginDTO = new LoginDTO("username","password");
+    }
+
 
     @Test
     public void testLogin_whenLogin_thenReturnAuthResponseDTO() throws Exception {
 
         /* given */
-        LoginDTO loginDTO = new LoginDTO("username", "password");
         AuthResponseDTO expectedResponseDTO = new AuthResponseDTO();
         expectedResponseDTO.setAccessToken("token");
         given(authService.login(any(LoginDTO.class))).willReturn(expectedResponseDTO);
@@ -68,7 +74,6 @@ public class AuthControllerTests {
     public void testLogin_givenInvalidCredentials_whenLogin_thenReturn401() throws Exception {
 
         /* given */
-        LoginDTO loginDTO = new LoginDTO("tester", "wrongPassword");
         given(authService.login(loginDTO)).willThrow(InvalidUsernameOrPasswordException.class);
 
         /* when */
@@ -88,7 +93,7 @@ public class AuthControllerTests {
     public void testLogin_givenInvalidArgs_whenLogin_thenReturn400() throws Exception {
 
         /* given */
-        LoginDTO loginDTO = new LoginDTO("", "");
+        loginDTO.setUsername("");
         given(authService.login(loginDTO)).willThrow(NullPointerException.class);
 
         /* when */
