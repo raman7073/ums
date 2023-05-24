@@ -1,6 +1,5 @@
 package com.usermanagement.springboot.services;
 
-
 import com.usermanagement.springboot.daos.UserDAO;
 import com.usermanagement.springboot.dtos.PasswordDTO;
 import com.usermanagement.springboot.dtos.UserDTO;
@@ -29,31 +28,32 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTests {
     @Mock
     private UserDAO userDAO;
+
     @Mock
     private Authentication authentication;
+
     @InjectMocks
     private UserServiceImpl userService;
 
     private User user;
     private UserDTO userDTO;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @BeforeEach
     public void setup() {
 
         user = new User();
         UUID userId = UUID.randomUUID();
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        passwordEncoder = new BCryptPasswordEncoder();
         user.setUsername("geeky");
         user.setUserId(userId);
-        user.setPassword(bCryptPasswordEncoder.encode("admin123"));
+        user.setPassword(passwordEncoder.encode("admin123"));
         user.setFirstName("Raman");
         user.setLastName("Mehta");
         user.setRole("Admin");
@@ -66,8 +66,8 @@ public class UserServiceTests {
     public void testCreateUserEntity_whenSaveUser_thenReturnUserEntity() {
 
         /* given */
-        given(userDAO.existsByUsername(user.getUsername())).willReturn(false);
-        given(userDAO.save(user)).willReturn(user);
+        when(userDAO.existsByUsername(user.getUsername())).thenReturn(false);
+        when(userDAO.save(user)).thenReturn(user);
 
         /* when */
         UserDTO savedUserDTO = userService.createUser(userDTO);
@@ -80,7 +80,7 @@ public class UserServiceTests {
     public void testCreateUserEntity_givenExistingUserName_whenSaveUser_thenThrowsException() {
 
         /* given */
-        given(userDAO.existsByUsername(user.getUsername())).willReturn(true);
+        when(userDAO.existsByUsername(user.getUsername())).thenReturn(true);
 
         /* when */
         assertThrows(UserNameAlreadyExistException.class,
@@ -92,11 +92,11 @@ public class UserServiceTests {
     }
 
     @Test
-    public void testGetAllUser_givenUsersList_whenGetAllUsers_thenReturnUserDTOSList() {
+    public void testGetAllUser_whenGetAllUsers_thenReturnUserDTOSList() {
 
         /* given  */
         User user1 = new User();
-        given(userDAO.findAll()).willReturn(List.of(user, user1));
+        when(userDAO.findAll()).thenReturn(List.of(user, user1));
 
         /* when */
         List<UserDTO> userDTOList = userService.getAllUser();
@@ -110,7 +110,7 @@ public class UserServiceTests {
     public void testGetAllUser_givenEmptyUserList_whenGetAllUsers_thenReturnEmptyUserDTOList() {
 
         /* given */
-        given(userDAO.findAll()).willReturn(Collections.emptyList());
+        when(userDAO.findAll()).thenReturn(Collections.emptyList());
 
         /* when */
         List<UserDTO> userDTOList = userService.getAllUser();
@@ -128,9 +128,9 @@ public class UserServiceTests {
         userDTO.setFirstName("Ram");
         user.setUsername("advt");
         user.setFirstName("Ram");
-        given(userDAO.findUserByUsername(user.getUsername())).willReturn(Optional.of(user));
-        given(userDAO.findById(userDTO.getUserId())).willReturn(Optional.of(user));
-        given(userDAO.save(user)).willReturn(user);
+        when(userDAO.findUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(userDAO.findById(userDTO.getUserId())).thenReturn(Optional.of(user));
+        when(userDAO.save(user)).thenReturn(user);
 
         /* when */
         UserDTO updatedUser = userService.updateUser(userDTO);
@@ -146,7 +146,7 @@ public class UserServiceTests {
         /* given */
         UUID userId = UUID.randomUUID();
         userDTO.setUserId(userId);
-        given(userDAO.findById(userId)).willReturn(Optional.empty());
+        when(userDAO.findById(userId)).thenReturn(Optional.empty());
 
         /* when */
         assertThrows(ResourceNotFoundException.class,
@@ -172,9 +172,9 @@ public class UserServiceTests {
         user1.setRole("Admin");
         UserDTO userDTO1 = new UserDTO();
         userDTO1.convert(user1);
-        given(userDAO.findUserByUsername(userDTO.getUsername()))
-                .willReturn(Optional.of(user));
-        given(userDAO.findById(userDTO1.getUserId())).willReturn(Optional.of(user1));
+        when(userDAO.findUserByUsername(userDTO.getUsername()))
+                .thenReturn(Optional.of(user));
+        when(userDAO.findById(userDTO1.getUserId())).thenReturn(Optional.of(user1));
 
         /* when */
         assertThrows(UserNameAlreadyExistException.class,
@@ -189,7 +189,7 @@ public class UserServiceTests {
     public void testGetUser_givenUserId_whenGetByUserId_thenReturnUserEntity() {
 
         /* given */
-        given(userDAO.findById(user.getUserId())).willReturn(Optional.of(user));
+        when(userDAO.findById(user.getUserId())).thenReturn(Optional.of(user));
 
         /* when */
         UserDTO savedUser = userService.getUser(user.getUserId());
@@ -203,7 +203,7 @@ public class UserServiceTests {
 
         /* given */
         UUID userId = UUID.randomUUID();
-        given(userDAO.findById(userId)).willReturn(Optional.empty());
+        when(userDAO.findById(userId)).thenReturn(Optional.empty());
 
         /* when */
         assertThrows(ResourceNotFoundException.class,
@@ -218,8 +218,8 @@ public class UserServiceTests {
     public void testDeleteUser_givenUserId_whenDeleteUser_thenNothing() {
 
         /* given */
-        given(userDAO.findById(user.getUserId())).willReturn(Optional.of(user));
-        willDoNothing().given(userDAO).deleteById(user.getUserId());
+        when(userDAO.findById(user.getUserId())).thenReturn(Optional.of(user));
+        doNothing().when(userDAO).deleteById(user.getUserId());
 
         /* when */
         userService.deleteUser(user.getUserId());
@@ -233,64 +233,61 @@ public class UserServiceTests {
 
         /* given */
         UUID userId = UUID.randomUUID();
-        given(userDAO.findById(userId)).willReturn(Optional.empty());
+        when(userDAO.findById(userId)).thenReturn(Optional.empty());
 
         /* when */
         assertThrows(ResourceNotFoundException.class,
                 () -> userService.deleteUser(userId)
         );
 
-        /*then*/
-        verify(userDAO, times(0)).deleteById(userId);
+        /* then */
+        verify(userDAO, never()).deleteById(userId);
     }
 
     @Test
-    public void testChangePassword_givenPasswordDTO_whenChangePassword_thenSaveUserWithNewPassword() {
+    public void testChangePassword_givenUserPassword_whenChangePassword_thenPasswordChanged() {
 
         /* given */
-        String username = "tester";
         String oldPassword = "oldPassword";
         String newPassword = "newPassword";
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        given(authentication.getName()).willReturn(username);
+        when(authentication.getName()).thenReturn(user.getUsername());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        User existingUser = new User();
-        existingUser.setUsername(username);
-        existingUser.setPassword(passwordEncoder.encode(oldPassword));
-        given(userDAO.findUserByUsername(username)).willReturn(Optional.of(existingUser));
+        user.setPassword(passwordEncoder.encode(oldPassword));
+        when(userDAO.findUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         /* when */
         PasswordDTO passwordDTO = new PasswordDTO(oldPassword, newPassword);
         userService.changePassword(passwordDTO);
 
         /* then */
-        verify(userDAO, times(1)).findUserByUsername(username);
-        verify(userDAO, times(1)).save(existingUser);
-        assertTrue(passwordEncoder.matches(newPassword, existingUser.getPassword()));
+        verify(userDAO, times(1))
+                .findUserByUsername(user.getUsername());
+        verify(userDAO, times(1))
+                .save(user);
+        assertTrue(passwordEncoder.matches(newPassword, user.getPassword()));
     }
 
     @Test
-    public void testChangePassword_givenInvalidOldPassword_whenChangePassword_thenThrowException() {
+    public void testChangePassword_givenIncorrectCurrentPassword_whenChangePassword_thenThrowsException() {
 
         /* given */
-        String username = "tester";
         String oldPassword = "wrongPassword";
         String newPassword = "newPassword";
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String encodedPassword = passwordEncoder.encode("admin123");
-        given(authentication.getName()).willReturn(username);
+        when(authentication.getName()).thenReturn(user.getUsername());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        User existingUser = new User();
-        existingUser.setUsername(username);
-        existingUser.setPassword(encodedPassword);
-        given(userDAO.findUserByUsername(username)).willReturn(Optional.of(existingUser));
+        when(userDAO.findUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         /* when */
         PasswordDTO passwordDTO = new PasswordDTO(oldPassword, newPassword);
-        assertThrows(BadCredentialsException.class, () -> userService.changePassword(passwordDTO));
+        assertThrows(BadCredentialsException.class,
+                () -> userService.changePassword(passwordDTO)
+        );
 
         /* then */
-        verify(userDAO, times(1)).findUserByUsername(username);
-        verify(userDAO, never()).save(existingUser);
+        verify(userDAO, times(1))
+                .findUserByUsername(user.getUsername());
+        verify(userDAO, never()).save(user);
     }
 }

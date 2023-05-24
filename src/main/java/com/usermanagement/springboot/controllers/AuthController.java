@@ -25,9 +25,6 @@ public class AuthController {
     public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid LoginDTO loginDTO) {
 
         AuthResponseDTO authResponseDTO =authService.login(loginDTO);
-        if(authResponseDTO == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
     }
 }

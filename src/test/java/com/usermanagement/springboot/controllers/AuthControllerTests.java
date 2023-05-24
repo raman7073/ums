@@ -1,6 +1,7 @@
 package com.usermanagement.springboot.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.usermanagement.springboot.daos.UserDAO;
 import com.usermanagement.springboot.dtos.AuthResponseDTO;
 import com.usermanagement.springboot.dtos.LoginDTO;
 import com.usermanagement.springboot.exceptions.InvalidUsernameOrPasswordException;
@@ -14,14 +15,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -32,18 +35,22 @@ public class AuthControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
+
     @MockBean
     private JwtTokenFilter jwtTokenFilter;
 
     @Autowired
     private ObjectMapper objectMapper;
-
+    @MockBean
+    private UserDAO userDAO;
+    @MockBean
+    private AuthenticationManager authManager;
     private LoginDTO loginDTO;
-    @BeforeEach
-    public void setup(){
-        loginDTO = new LoginDTO("username","password");
-    }
 
+    @BeforeEach
+    public void setup() {
+        loginDTO = new LoginDTO("username", "password");
+    }
 
     @Test
     public void testLogin_whenLogin_thenReturnAuthResponseDTO() throws Exception {
@@ -51,7 +58,8 @@ public class AuthControllerTests {
         /* given */
         AuthResponseDTO expectedResponseDTO = new AuthResponseDTO();
         expectedResponseDTO.setAccessToken("token");
-        given(authService.login(any(LoginDTO.class))).willReturn(expectedResponseDTO);
+        expectedResponseDTO.setTokenType("Bearer");
+        when(authService.login(any(LoginDTO.class))).thenReturn(expectedResponseDTO);
 
         /* when */
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
@@ -62,19 +70,19 @@ public class AuthControllerTests {
 
         /* then */
         response.andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken",
                         CoreMatchers.is(expectedResponseDTO.getAccessToken())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.tokenType",
                         CoreMatchers.is(expectedResponseDTO.getTokenType())));
     }
 
-
     @Test
     public void testLogin_givenInvalidCredentials_whenLogin_thenReturn401() throws Exception {
 
         /* given */
-        given(authService.login(loginDTO)).willThrow(InvalidUsernameOrPasswordException.class);
+        when(authService.login(any(LoginDTO.class)))
+                .thenThrow(InvalidUsernameOrPasswordException.class);
 
         /* when */
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
@@ -94,7 +102,7 @@ public class AuthControllerTests {
 
         /* given */
         loginDTO.setUsername("");
-        given(authService.login(loginDTO)).willThrow(NullPointerException.class);
+        when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
 
         /* when */
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
@@ -105,8 +113,6 @@ public class AuthControllerTests {
 
         /* then */
         response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                .status().isBadRequest());
+                .andExpect(status().isBadRequest());
     }
 }
-

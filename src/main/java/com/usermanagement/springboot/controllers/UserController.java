@@ -25,9 +25,6 @@ public class UserController {
     public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserDTO userDTO) {
 
         UserDTO userDTO1 = userService.createUser(userDTO);
-        if (userDTO1 == null){
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
         return new ResponseEntity<>(userDTO1, HttpStatus.CREATED);
     }
 
@@ -45,9 +42,6 @@ public class UserController {
     public ResponseEntity<UserDTO> getUser(@PathVariable(USERID) UUID userId) {
 
         UserDTO userDTO = userService.getUser(userId);
-        if(userDTO == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
@@ -57,9 +51,6 @@ public class UserController {
 
         userDTO.setUserId(userId);
         UserDTO userDTO1 = userService.updateUser(userDTO);
-        if(userDTO1 == null){
-            return new ResponseEntity<>( HttpStatus.BAD_REQUEST);
-        }
         return new ResponseEntity<>(userDTO1, HttpStatus.OK);
     }
 

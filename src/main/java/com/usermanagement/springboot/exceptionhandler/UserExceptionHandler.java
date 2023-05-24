@@ -56,7 +56,7 @@ public class UserExceptionHandler {
                 webRequest.getDescription(false),
                 INVALID_USERNAME_OR_PASSWORD
         );
-        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorDetails> handleBadCredentialsException(

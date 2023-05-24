@@ -23,11 +23,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
+import static com.usermanagement.springboot.common.Constants.USER_NAME_ALREADY_EXIST;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -58,6 +56,7 @@ public class UserControllerTests {
     public void setup() {
 
         userDTO = new UserDTO();
+        userDTO.setUserId(UUID.randomUUID());
         userDTO.setUsername("nial");
         userDTO.setPassword("admin123");
         userDTO.setFirstName("Raman");
@@ -67,60 +66,63 @@ public class UserControllerTests {
 
     @Test
     public void testCreateUser_whenCreateUser_thenReturnSavedUser() throws Exception {
-
         /* given */
-        given(userService.createUser(ArgumentMatchers.any(UserDTO.class)))
-                .willAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
-
-        /* when */
-        ResultActions response = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .post("/v1/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("utf-8")
-                        .content(objectMapper.writeValueAsString(userDTO)));
-
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                        .status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.username",
-                        CoreMatchers.is(userDTO.getUsername())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.password",
-                        CoreMatchers.is(userDTO.getPassword())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.firstName",
-                        CoreMatchers.is(userDTO.getFirstName())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName",
-                        CoreMatchers.is(userDTO.getLastName())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.role",
-                        CoreMatchers.is(userDTO.getRole())));
-    }
-
-    @Test
-    public void testCreateUser_givenExistingUserName_whenCreateUser_thenReturn409() throws Exception {
-
-        /* given */
-        given(userService.createUser(userDTO)).willThrow(UserNameAlreadyExistException.class);
+        when(userService.createUser(any(UserDTO.class)))
+                .thenAnswer(
+                        invocationOnMock -> invocationOnMock.getArgument(0)
+                );
 
         /* when */
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
                 .post("/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8")
-                .content(objectMapper.writeValueAsString(userDTO))
-        );
+                .content(objectMapper.writeValueAsString(userDTO)));
+
         /* then */
         response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                        .status().isConflict());
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username",
+                        is(userDTO.getUsername())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.password",
+                        is(userDTO.getPassword())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.firstName",
+                        is(userDTO.getFirstName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName",
+                        is(userDTO.getLastName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.role",
+                        is(userDTO.getRole())));
     }
+
+    @Test
+    public void testCreateUser_givenExistingUserName_whenCreateUser_thenReturn409() throws Exception {
+
+        /* given */
+        when(userService.createUser(ArgumentMatchers.any(UserDTO.class)))
+                .thenThrow(new UserNameAlreadyExistException(USER_NAME_ALREADY_EXIST));
+
+        /* then */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isConflict());
+        verify(userService, times(1))
+                .createUser(ArgumentMatchers.any(UserDTO.class));
+    }
+
 
     @Test
     public void testCreateUser_givenInvalidArgs_whenCreateUser_thenThrowsException() throws Exception {
 
         /* given */
         userDTO.setUsername("");
-        given(userService.createUser(userDTO)).willThrow(NullPointerException.class);
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
@@ -149,7 +151,7 @@ public class UserControllerTests {
         userDTO1.setRole("Admin");
         userDTOList.add(userDTO);
         userDTOList.add(userDTO1);
-        given(userService.getAllUser()).willReturn(userDTOList);
+        when(userService.getAllUser()).thenReturn(userDTOList);
 
         /* when */
         ResultActions response = mockMvc.perform(
@@ -171,7 +173,7 @@ public class UserControllerTests {
 
         /* given */
         List<UserDTO> userDTOList = new ArrayList<>();
-        given(userService.getAllUser()).willReturn(Collections.emptyList());
+        when(userService.getAllUser()).thenReturn(Collections.emptyList());
 
         /* when */
         ResultActions response = mockMvc.perform(
@@ -190,7 +192,7 @@ public class UserControllerTests {
         /* given */
         UUID userId = UUID.randomUUID();
         userDTO.setUserId(userId);
-        given(userService.getUser(userId)).willReturn(userDTO);
+        when(userService.getUser(userId)).thenReturn(userDTO);
 
         /* when */
         ResultActions response = mockMvc.perform(
@@ -214,11 +216,11 @@ public class UserControllerTests {
     }
 
     @Test
-    public void testGetUser_givenInvalidUserId_whenGetUserById_thenReturnEmpty() throws Exception {
+    public void testGetUser_givenInvalidUserId_whenGetUserById_thenReturn404() throws Exception {
 
         /* given */
         UUID userId = UUID.randomUUID();
-        given(userService.getUser(userId)).willReturn(null);
+        when(userService.getUser(userId)).thenThrow(ResourceNotFoundException.class);
 
         /* when */
         ResultActions response = mockMvc.perform(
@@ -238,8 +240,8 @@ public class UserControllerTests {
         UUID userId = UUID.randomUUID();
         userDTO.setUserId(userId);
         userDTO.setUsername("advt");
-        given(userService.updateUser(ArgumentMatchers.any(UserDTO.class)))
-                .willAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+        when(userService.updateUser(ArgumentMatchers.any(UserDTO.class)))
+                .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
         /* when */
         ResultActions response = mockMvc
@@ -272,7 +274,7 @@ public class UserControllerTests {
         UUID userId = UUID.randomUUID();
         userDTO.setUserId(userId);
         userDTO.setUsername("");
-        given(userService.updateUser(userDTO)).willThrow(NullPointerException.class);
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
         ResultActions response = mockMvc
@@ -293,9 +295,9 @@ public class UserControllerTests {
 
         /* given */
         UUID userId = UUID.randomUUID();
-        userDTO.setUserId(UUID.randomUUID());
-
-        given(userService.updateUser(userDTO)).willThrow(NullPointerException.class);
+        userDTO.setUserId(userId);
+        when(userService.updateUser(any(UserDTO.class)))
+                .thenThrow(new ResourceNotFoundException("User", "ID", userId.toString()));
 
         /* when */
         ResultActions response = mockMvc
@@ -308,7 +310,7 @@ public class UserControllerTests {
         /* then */
         response.andDo(print())
                 .andExpect(MockMvcResultMatchers
-                        .status().isBadRequest());
+                        .status().isNotFound());
     }
 
     @Test
@@ -316,7 +318,7 @@ public class UserControllerTests {
 
         /* given */
         UUID userId = UUID.randomUUID();
-        willDoNothing().given(userService).deleteUser(userId);
+        doNothing().when(userService).deleteUser(userId);
 
         /* when */
         ResultActions response = mockMvc.perform(
@@ -334,7 +336,7 @@ public class UserControllerTests {
 
         /* given */
         UUID userId = UUID.randomUUID();
-        willThrow(ResourceNotFoundException.class).given(userService).deleteUser(userId);
+        doThrow(ResourceNotFoundException.class).when(userService).deleteUser(userId);
 
         /* when */
         ResultActions response = mockMvc.perform(
@@ -352,7 +354,7 @@ public class UserControllerTests {
 
         /* given */
         PasswordDTO passwordDTODTO = new PasswordDTO("oldPassword", "newPassword");
-        willDoNothing().given(userService).changePassword(any(PasswordDTO.class));
+        doNothing().when(userService).changePassword(any(PasswordDTO.class));
 
         /* when */
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
@@ -371,8 +373,10 @@ public class UserControllerTests {
             throws Exception {
 
         /* given */
-        PasswordDTO passwordDTODTO = new PasswordDTO("oldPassword", "newPassword");
-        willThrow(BadCredentialsException.class).given(userService).changePassword(any(PasswordDTO.class));
+        PasswordDTO passwordDTODTO = new PasswordDTO("oldPassword",
+                "newPassword");
+        doThrow(BadCredentialsException.class).when(userService)
+                .changePassword(any(PasswordDTO.class));
 
         /* when */
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
@@ -392,8 +396,8 @@ public class UserControllerTests {
 
         /* given */
         PasswordDTO passwordDTODTO = new PasswordDTO("", "newPassword");
-        willThrow(NullPointerException.class)
-                .given(userService)
+        doThrow(NullPointerException.class)
+                .when(userService)
                 .changePassword(any(PasswordDTO.class));
 
         /* when */

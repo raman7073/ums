@@ -24,73 +24,70 @@ import static com.usermanagement.springboot.common.Constants.*;
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
-    private UserDAO userDao;
+    private UserDAO userDAO;
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
 
         User user = new User();
         user.convert(userDTO);
-        if (user.getUsername() != null && userDao.existsByUsername(user.getUsername())) {
+        if (user.getUsername() != null && userDAO.existsByUsername(user.getUsername())) {
             throw new UserNameAlreadyExistException(USER_NAME_ALREADY_EXIST);
         }
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         if (user.getPassword() != null) {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         }
-        userDao.save(user);
+        userDAO.save(user);
         return userDTO.convert(user);
     }
 
     @Override
     public List<UserDTO> getAllUser() {
 
-        List<User> userList = userDao.findAll();
+        List<User> userList = userDAO.findAll();
         List<UserDTO> userDTOList = new ArrayList<>();
         UserDTO userDTO = new UserDTO();
-        userList.forEach(user -> {
-            userDTOList.add(
-                    userDTO.convert(user)
-            );
-        });
+        userList.forEach(user -> userDTOList.add(
+                userDTO.convert(user)
+        ));
         return userDTOList;
     }
 
     @Override
     public UserDTO updateUser(UserDTO userDTO) {
 
-        User user = new User();
-        user.convert(userDTO);
-
-        Optional<User> userDb = userDao.findUserByUsername(user.getUsername());
-        Optional<User> getUser = Optional.ofNullable(userDao.findById(user.getUserId()).
-                orElseThrow(
+        Optional<User> getUserById = Optional.ofNullable(userDAO
+                .findById(userDTO.getUserId())
+                .orElseThrow(
                         () -> new ResourceNotFoundException(USER,
                                 ID,
-                                String.valueOf(user.getUserId())
+                                String.valueOf(userDTO.getUserId())
                         )
                 )
         );
-        if (userDb.isPresent() && user.getUserId() != userDb.get().getUserId()) {
+        User user = getUserById.get();
+        Optional<User> getUserByUsername = userDAO
+                .findUserByUsername(userDTO.getUsername());
+        if (getUserByUsername.isPresent() &&
+                user.getUserId() != getUserByUsername.get().getUserId()) {
+
             throw new UserNameAlreadyExistException(USER_NAME_ALREADY_EXIST);
         }
-        User updateUser = getUser.get();
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
-        updateUser.setUserId(user.getUserId());
-        updateUser.setUsername(user.getUsername());
-        updateUser.setPassword(encryptedPassword);
-        updateUser.setFirstName(user.getFirstName());
-        updateUser.setLastName(user.getLastName());
-        updateUser.setRole(user.getRole());
-        return userDTO.convert(userDao.save(updateUser));
+        user.setUsername(userDTO.getUsername());
+        user.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setRole(userDTO.getRole());
+        return userDTO.convert(userDAO.save(user));
     }
 
     @Override
     public UserDTO getUser(UUID userId) {
 
         Optional<User> user = Optional
-                .ofNullable(userDao.findById(userId)
+                .ofNullable(userDAO.findById(userId)
                         .orElseThrow(
                                 () -> new ResourceNotFoundException(USER,
                                         USERID,
@@ -104,10 +101,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(UUID userId) {
 
-        userDao.findById(userId).orElseThrow(
+        userDAO.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException(USER, USERID, String.valueOf(userId))
         );
-        userDao.deleteById(userId);
+        userDAO.deleteById(userId);
     }
 
     @Override
@@ -118,7 +115,7 @@ public class UserServiceImpl implements UserService {
 
             String username = authentication.getName();
             Optional<User> user = Optional.ofNullable(
-                    userDao.findUserByUsername(username).orElseThrow(
+                    userDAO.findUserByUsername(username).orElseThrow(
                             () -> new ResourceNotFoundException(
                                     USERNAME,
                                     USER_NOT_EXIST,
@@ -126,15 +123,17 @@ public class UserServiceImpl implements UserService {
                             )
                     )
             );
-            BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-            if (!bCryptPasswordEncoder.matches(passwordDTO.getOldPassword(), user.get().getPassword())) {
-                throw new BadCredentialsException(PASSWORD_NOT_MATCH);
-            }
-            User user1 = user.get();
-            user1.setPassword(bCryptPasswordEncoder.encode(passwordDTO.getNewPassword()));
-            userDao.save(user1);
+            user.ifPresent(user1 -> {
+                BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+                if (!bCryptPasswordEncoder.matches(passwordDTO.getCurrentPassword(),
+                        user1.getPassword())) {
+
+                    throw new BadCredentialsException(PASSWORD_NOT_MATCH);
+                }
+                user1.setPassword(bCryptPasswordEncoder.encode(passwordDTO.getNewPassword()));
+                userDAO.save(user1);
+
+            });
         }
     }
-
-
 }
