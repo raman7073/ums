@@ -98,10 +98,119 @@ public class AuthControllerTests {
     }
 
     @Test
-    public void testLogin_givenInvalidArgs_whenLogin_thenReturn400() throws Exception {
+    public void testLogin_givenUsernameAsNull_whenLogin_thenReturn400() throws Exception {
+
+        /* given */
+        loginDTO.setUsername(null);
+        when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(loginDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    public void testLogin_givenUsernameAsEmpty_whenLogin_thenReturn400() throws Exception {
 
         /* given */
         loginDTO.setUsername("");
+        when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(loginDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    public void testLogin_givenUsernameAsSpace_whenLogin_thenReturn400() throws Exception {
+
+        /* given */
+        loginDTO.setUsername("       ");
+        when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(loginDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    public void testLogin_givenPasswordAsNull_whenLogin_thenReturn400() throws Exception {
+
+        /* given */
+        loginDTO.setPassword(null);
+        when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(loginDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    public void testLogin_givenPasswordAsEmpty_whenLogin_thenReturn400() throws Exception {
+
+        /* given */
+        loginDTO.setPassword("");
+        when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(loginDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    public void testLogin_givenPasswordAsSpace_whenLogin_thenReturn400() throws Exception {
+
+        /* given */
+        loginDTO.setPassword("       ");
+        when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(loginDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    public void testLogin_givenInvalidArgs_whenLogin_thenReturn400() throws Exception {
+
+        /* given */
+        loginDTO.setUsername(null);
+        loginDTO.setPassword("       ");
         when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
 
         /* when */

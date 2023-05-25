@@ -23,7 +23,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 import static com.usermanagement.springboot.common.Constants.USER_NAME_ALREADY_EXIST;
 import static org.hamcrest.CoreMatchers.is;
@@ -118,10 +121,312 @@ public class UserControllerTests {
 
 
     @Test
+    public void testCreateUser_givenUsernameAsEmpty_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setUsername("");
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenUsernameAsNull_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setUsername(null);
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenUsernameAsSpace_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setUsername("        ");
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenPasswordAsEmpty_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setPassword("");
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenPasswordAsNull_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setPassword(null);
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenPasswordAsSpace_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setPassword("          ");
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenFirstNameAsEmpty_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setFirstName("");
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenFirstNameAsNull_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setFirstName(null);
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenFirstNameAsSpace_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setFirstName("          ");
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenLastNameAsEmpty_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setLastName("");
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenLastNameAsNull_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setLastName(null);
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenLastNameAsSpace_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setLastName("          ");
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenRoleAsEmpty_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setRole("");
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenRoleAsNull_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setRole(null);
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateUser_givenRoleAsSpace_whenCreateUser_thenThrowsException() throws Exception {
+
+        /* given */
+        userDTO.setRole("          ");
+        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(userDTO))
+        );
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
     public void testCreateUser_givenInvalidArgs_whenCreateUser_thenThrowsException() throws Exception {
 
         /* given */
         userDTO.setUsername("");
+        userDTO.setPassword(null);
+        userDTO.setRole("          ");
         when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -274,6 +579,352 @@ public class UserControllerTests {
         UUID userId = UUID.randomUUID();
         userDTO.setUserId(userId);
         userDTO.setUsername("");
+        userDTO.setLastName(null);
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenUsernameAsEmpty_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setUsername("");
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenUsernameAsNull_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setUsername(null);
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenUsernameAsSpace_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setUsername("    ");
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenPasswordAsEmpty_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setPassword("");
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenPasswordAsNull_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setPassword(null);
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenPasswordAsSpace_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setPassword("       ");
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenFirstNameAsEmpty_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setFirstName("");
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenFirstNameAsNull_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setFirstName(null);
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenFirstNameAsSpace_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setFirstName("    ");
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenLastNameAsEmpty_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setLastName("");
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenLastNameAsNull_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setLastName(null);
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenLastNameAsSpace_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setLastName("    ");
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenRoleAsEmpty_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setRole("");
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenRoleAsNull_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setRole(null);
+        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
+
+        /* when */
+        ResultActions response = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .put("/v1/users/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(userDTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers
+                        .status().isBadRequest());
+    }
+
+    @Test
+    public void testUpdateUser_givenRoleAsSpace_whenUpdateUser_thenReturn404() throws Exception {
+
+        /* given */
+        UUID userId = UUID.randomUUID();
+        userDTO.setUserId(userId);
+        userDTO.setRole("    ");
         when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -391,11 +1042,143 @@ public class UserControllerTests {
     }
 
     @Test
-    public void testChangepassword_givenInvalidArgs_whenChangePassword_thenThrowsException()
+    public void testChangepassword_givenCurrentPasswordAsEmpty_whenChangePassword_thenThrowsException()
             throws Exception {
 
         /* given */
         PasswordDTO passwordDTODTO = new PasswordDTO("", "newPassword");
+        doThrow(NullPointerException.class)
+                .when(userService)
+                .changePassword(any(PasswordDTO.class));
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users/change-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(passwordDTODTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void testChangepassword_givenCurrentPasswordAsNull_whenChangePassword_thenThrowsException()
+            throws Exception {
+
+        /* given */
+        PasswordDTO passwordDTODTO = new PasswordDTO(null, "newPassword");
+        doThrow(NullPointerException.class)
+                .when(userService)
+                .changePassword(any(PasswordDTO.class));
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users/change-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(passwordDTODTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void testChangepassword_givenCurrentPasswordAsSpace_whenChangePassword_thenThrowsException()
+            throws Exception {
+
+        /* given */
+        PasswordDTO passwordDTODTO = new PasswordDTO("      ", "newPassword");
+        doThrow(NullPointerException.class)
+                .when(userService)
+                .changePassword(any(PasswordDTO.class));
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users/change-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(passwordDTODTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void testChangepassword_givenNewPasswordAsEmpty_whenChangePassword_thenThrowsException()
+            throws Exception {
+
+        /* given */
+        PasswordDTO passwordDTODTO = new PasswordDTO("password", "");
+        doThrow(NullPointerException.class)
+                .when(userService)
+                .changePassword(any(PasswordDTO.class));
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users/change-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(passwordDTODTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void testChangepassword_givenNewPasswordAsNull_whenChangePassword_thenThrowsException()
+            throws Exception {
+
+        /* given */
+        PasswordDTO passwordDTODTO = new PasswordDTO("password", null);
+        doThrow(NullPointerException.class)
+                .when(userService)
+                .changePassword(any(PasswordDTO.class));
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users/change-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(passwordDTODTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void testChangepassword_givenNewPasswordAsSpace_whenChangePassword_thenThrowsException()
+            throws Exception {
+
+        /* given */
+        PasswordDTO passwordDTODTO = new PasswordDTO("password", "    ");
+        doThrow(NullPointerException.class)
+                .when(userService)
+                .changePassword(any(PasswordDTO.class));
+
+        /* when */
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/v1/users/change-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(objectMapper.writeValueAsString(passwordDTODTO)));
+
+        /* then */
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void testChangepassword_givenInvalidArgs_whenChangePassword_thenThrowsException()
+            throws Exception {
+
+        /* given */
+        PasswordDTO passwordDTODTO = new PasswordDTO("", null);
         doThrow(NullPointerException.class)
                 .when(userService)
                 .changePassword(any(PasswordDTO.class));

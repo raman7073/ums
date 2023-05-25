@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -13,8 +13,8 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 public class PasswordDTO {
 
-    @NotEmpty
+    @NotBlank
     private String currentPassword;
-    @NotEmpty
+    @NotBlank
     private String newPassword;
 }

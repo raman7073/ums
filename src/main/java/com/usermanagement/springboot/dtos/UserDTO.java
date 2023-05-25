@@ -5,7 +5,7 @@ import com.usermanagement.springboot.entities.User;
 import lombok.*;
 import org.springframework.core.convert.converter.Converter;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -21,20 +21,20 @@ public class UserDTO implements Converter<User, UserDTO> {
 
     private UUID userId;
 
-    @NotEmpty(message = INVALID_USERNAME)
+    @NotBlank(message = INVALID_USERNAME)
     private String username;
 
-    @NotEmpty(message = INVALID_PASSWORD)
+    @NotBlank(message = INVALID_PASSWORD)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @NotEmpty(message = INVALID_FIRST_NAME)
+    @NotBlank(message = INVALID_FIRST_NAME)
     private String firstName;
 
-    @NotEmpty(message = INVALID_LAST_NAME)
+    @NotBlank(message = INVALID_LAST_NAME)
     private String lastName;
 
-    @NotEmpty(message = INVALID_ROLE)
+    @NotBlank(message = INVALID_ROLE)
     private String role;
 
     private LocalDateTime createdAt;
