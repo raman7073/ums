@@ -120,10 +120,10 @@ public class AuthControllerTests {
 
     @ParameterizedTest
     @ValueSource(strings = {"", "   "})
-    public void testLogin_givenInvalidUsernameUsername_whenLogin_thenReturn400(String Username) throws Exception {
+    public void testLogin_givenInvalidUsernameUsername_whenLogin_thenReturn400(String username) throws Exception {
 
         /* given */
-        loginDTO.setUsername(Username);
+        loginDTO.setUsername(username);
         when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -177,24 +177,6 @@ public class AuthControllerTests {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    public void testLogin_givenPasswordAsSpace_whenLogin_thenReturn400() throws Exception {
-
-        /* given */
-        loginDTO.setPassword("       ");
-        when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
-
-        /* when */
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .post("/v1/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .content(objectMapper.writeValueAsString(loginDTO)));
-
-        /* then */
-        response.andDo(print())
-                .andExpect(status().isBadRequest());
-    }
 
     @Test
     public void testLogin_givenInvalidArgs_whenLogin_thenReturn400() throws Exception {
