@@ -58,13 +58,13 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable(USERID) UUID userId) {
 
         userService.deleteUser(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(DELETED);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(CHANGEPASSWORD)
     public ResponseEntity<String> changePassword(@RequestBody @Valid PasswordDTO passwordDTO) {
 
-         userService.changePassword(passwordDTO);
-         return ResponseEntity.status(HttpStatus.OK).body(UPDATED);
+        userService.changePassword(passwordDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(UPDATED);
     }
 }
