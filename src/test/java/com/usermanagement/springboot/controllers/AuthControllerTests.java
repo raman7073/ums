@@ -10,6 +10,8 @@ import com.usermanagement.springboot.services.AuthService;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -115,11 +117,13 @@ public class AuthControllerTests {
         response.andDo(print())
                 .andExpect(status().isBadRequest());
     }
-    @Test
-    public void testLogin_givenUsernameAsEmpty_whenLogin_thenReturn400() throws Exception {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testLogin_givenInvalidUsernameUsername_whenLogin_thenReturn400(String Username) throws Exception {
 
         /* given */
-        loginDTO.setUsername("");
+        loginDTO.setUsername(Username);
         when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -133,24 +137,7 @@ public class AuthControllerTests {
         response.andDo(print())
                 .andExpect(status().isBadRequest());
     }
-    @Test
-    public void testLogin_givenUsernameAsSpace_whenLogin_thenReturn400() throws Exception {
 
-        /* given */
-        loginDTO.setUsername("       ");
-        when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
-
-        /* when */
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .post("/v1/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .content(objectMapper.writeValueAsString(loginDTO)));
-
-        /* then */
-        response.andDo(print())
-                .andExpect(status().isBadRequest());
-    }
     @Test
     public void testLogin_givenPasswordAsNull_whenLogin_thenReturn400() throws Exception {
 
@@ -169,11 +156,13 @@ public class AuthControllerTests {
         response.andDo(print())
                 .andExpect(status().isBadRequest());
     }
-    @Test
-    public void testLogin_givenPasswordAsEmpty_whenLogin_thenReturn400() throws Exception {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testLogin_givenInvalidPassword_whenLogin_thenReturn400(String password) throws Exception {
 
         /* given */
-        loginDTO.setPassword("");
+        loginDTO.setPassword(password);
         when(authService.login(loginDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -187,6 +176,7 @@ public class AuthControllerTests {
         response.andDo(print())
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     public void testLogin_givenPasswordAsSpace_whenLogin_thenReturn400() throws Exception {
 
@@ -205,6 +195,7 @@ public class AuthControllerTests {
         response.andDo(print())
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     public void testLogin_givenInvalidArgs_whenLogin_thenReturn400() throws Exception {
 

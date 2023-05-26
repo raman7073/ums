@@ -11,6 +11,8 @@ import com.usermanagement.springboot.services.UserService;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -120,11 +122,12 @@ public class UserControllerTests {
     }
 
 
-    @Test
-    public void testCreateUser_givenUsernameAsEmpty_whenCreateUser_thenThrowsException() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testCreateUser_givenInvalidUsername_whenCreateUser_thenThrowsException(String username) throws Exception {
 
         /* given */
-        userDTO.setUsername("");
+        userDTO.setUsername(username);
         when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -160,31 +163,13 @@ public class UserControllerTests {
                         .status().isBadRequest());
     }
 
-    @Test
-    public void testCreateUser_givenUsernameAsSpace_whenCreateUser_thenThrowsException() throws Exception {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testCreateUser_givenInvalidPassword_whenCreateUser_thenThrowsException(String password) throws Exception {
 
         /* given */
-        userDTO.setUsername("        ");
-        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
-
-        /* when */
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .post("/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .content(objectMapper.writeValueAsString(userDTO))
-        );
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                        .status().isBadRequest());
-    }
-
-    @Test
-    public void testCreateUser_givenPasswordAsEmpty_whenCreateUser_thenThrowsException() throws Exception {
-
-        /* given */
-        userDTO.setPassword("");
+        userDTO.setPassword(password);
         when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -220,31 +205,12 @@ public class UserControllerTests {
                         .status().isBadRequest());
     }
 
-    @Test
-    public void testCreateUser_givenPasswordAsSpace_whenCreateUser_thenThrowsException() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testCreateUser_givenInvalidFirstName_whenCreateUser_thenThrowsException(String firstName) throws Exception {
 
         /* given */
-        userDTO.setPassword("          ");
-        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
-
-        /* when */
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .post("/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .content(objectMapper.writeValueAsString(userDTO))
-        );
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                        .status().isBadRequest());
-    }
-
-    @Test
-    public void testCreateUser_givenFirstNameAsEmpty_whenCreateUser_thenThrowsException() throws Exception {
-
-        /* given */
-        userDTO.setFirstName("");
+        userDTO.setFirstName(firstName);
         when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -280,31 +246,13 @@ public class UserControllerTests {
                         .status().isBadRequest());
     }
 
-    @Test
-    public void testCreateUser_givenFirstNameAsSpace_whenCreateUser_thenThrowsException() throws Exception {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testCreateUser_givenInvalidLastName_whenCreateUser_thenThrowsException(String lastName) throws Exception {
 
         /* given */
-        userDTO.setFirstName("          ");
-        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
-
-        /* when */
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .post("/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .content(objectMapper.writeValueAsString(userDTO))
-        );
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                        .status().isBadRequest());
-    }
-
-    @Test
-    public void testCreateUser_givenLastNameAsEmpty_whenCreateUser_thenThrowsException() throws Exception {
-
-        /* given */
-        userDTO.setLastName("");
+        userDTO.setLastName(lastName);
         when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -340,31 +288,12 @@ public class UserControllerTests {
                         .status().isBadRequest());
     }
 
-    @Test
-    public void testCreateUser_givenLastNameAsSpace_whenCreateUser_thenThrowsException() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testCreateUser_givenInvalidRole_whenCreateUser_thenThrowsException(String role) throws Exception {
 
         /* given */
-        userDTO.setLastName("          ");
-        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
-
-        /* when */
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .post("/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .content(objectMapper.writeValueAsString(userDTO))
-        );
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                        .status().isBadRequest());
-    }
-
-    @Test
-    public void testCreateUser_givenRoleAsEmpty_whenCreateUser_thenThrowsException() throws Exception {
-
-        /* given */
-        userDTO.setRole("");
+        userDTO.setRole(role);
         when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -400,25 +329,6 @@ public class UserControllerTests {
                         .status().isBadRequest());
     }
 
-    @Test
-    public void testCreateUser_givenRoleAsSpace_whenCreateUser_thenThrowsException() throws Exception {
-
-        /* given */
-        userDTO.setRole("          ");
-        when(userService.createUser(userDTO)).thenThrow(NullPointerException.class);
-
-        /* when */
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .post("/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .content(objectMapper.writeValueAsString(userDTO))
-        );
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                        .status().isBadRequest());
-    }
 
     @Test
     public void testCreateUser_givenInvalidArgs_whenCreateUser_thenThrowsException() throws Exception {
@@ -596,13 +506,14 @@ public class UserControllerTests {
                         .status().isBadRequest());
     }
 
-    @Test
-    public void testUpdateUser_givenUsernameAsEmpty_whenUpdateUser_thenReturn404() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testUpdateUser_givenInvalidUsername_whenUpdateUser_thenReturn404(String username) throws Exception {
 
         /* given */
         UUID userId = UUID.randomUUID();
         userDTO.setUserId(userId);
-        userDTO.setUsername("");
+        userDTO.setUsername(username);
         when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -642,36 +553,15 @@ public class UserControllerTests {
                         .status().isBadRequest());
     }
 
-    @Test
-    public void testUpdateUser_givenUsernameAsSpace_whenUpdateUser_thenReturn404() throws Exception {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testUpdateUser_givenInvalidPassword_whenUpdateUser_thenReturn404(String password) throws Exception {
 
         /* given */
         UUID userId = UUID.randomUUID();
         userDTO.setUserId(userId);
-        userDTO.setUsername("    ");
-        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
-
-        /* when */
-        ResultActions response = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .put("/v1/users/{userId}", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("utf-8")
-                        .content(objectMapper.writeValueAsString(userDTO)));
-
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                        .status().isBadRequest());
-    }
-
-    @Test
-    public void testUpdateUser_givenPasswordAsEmpty_whenUpdateUser_thenReturn404() throws Exception {
-
-        /* given */
-        UUID userId = UUID.randomUUID();
-        userDTO.setUserId(userId);
-        userDTO.setPassword("");
+        userDTO.setPassword(password);
         when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -711,36 +601,14 @@ public class UserControllerTests {
                         .status().isBadRequest());
     }
 
-    @Test
-    public void testUpdateUser_givenPasswordAsSpace_whenUpdateUser_thenReturn404() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testUpdateUser_givenInvalidFirstName_whenUpdateUser_thenReturn404(String firstName) throws Exception {
 
         /* given */
         UUID userId = UUID.randomUUID();
         userDTO.setUserId(userId);
-        userDTO.setPassword("       ");
-        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
-
-        /* when */
-        ResultActions response = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .put("/v1/users/{userId}", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("utf-8")
-                        .content(objectMapper.writeValueAsString(userDTO)));
-
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                        .status().isBadRequest());
-    }
-
-    @Test
-    public void testUpdateUser_givenFirstNameAsEmpty_whenUpdateUser_thenReturn404() throws Exception {
-
-        /* given */
-        UUID userId = UUID.randomUUID();
-        userDTO.setUserId(userId);
-        userDTO.setFirstName("");
+        userDTO.setFirstName(firstName);
         when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -780,36 +648,15 @@ public class UserControllerTests {
                         .status().isBadRequest());
     }
 
-    @Test
-    public void testUpdateUser_givenFirstNameAsSpace_whenUpdateUser_thenReturn404() throws Exception {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testUpdateUser_givenInvalidLastName_whenUpdateUser_thenReturn404(String lastName) throws Exception {
 
         /* given */
         UUID userId = UUID.randomUUID();
         userDTO.setUserId(userId);
-        userDTO.setFirstName("    ");
-        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
-
-        /* when */
-        ResultActions response = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .put("/v1/users/{userId}", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("utf-8")
-                        .content(objectMapper.writeValueAsString(userDTO)));
-
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                        .status().isBadRequest());
-    }
-
-    @Test
-    public void testUpdateUser_givenLastNameAsEmpty_whenUpdateUser_thenReturn404() throws Exception {
-
-        /* given */
-        UUID userId = UUID.randomUUID();
-        userDTO.setUserId(userId);
-        userDTO.setLastName("");
+        userDTO.setLastName(lastName);
         when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -849,36 +696,15 @@ public class UserControllerTests {
                         .status().isBadRequest());
     }
 
-    @Test
-    public void testUpdateUser_givenLastNameAsSpace_whenUpdateUser_thenReturn404() throws Exception {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testUpdateUser_givenInvalidRoleAs_whenUpdateUser_thenReturn404(String role) throws Exception {
 
         /* given */
         UUID userId = UUID.randomUUID();
         userDTO.setUserId(userId);
-        userDTO.setLastName("    ");
-        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
-
-        /* when */
-        ResultActions response = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .put("/v1/users/{userId}", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("utf-8")
-                        .content(objectMapper.writeValueAsString(userDTO)));
-
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                        .status().isBadRequest());
-    }
-
-    @Test
-    public void testUpdateUser_givenRoleAsEmpty_whenUpdateUser_thenReturn404() throws Exception {
-
-        /* given */
-        UUID userId = UUID.randomUUID();
-        userDTO.setUserId(userId);
-        userDTO.setRole("");
+        userDTO.setRole(role);
         when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
 
         /* when */
@@ -918,28 +744,6 @@ public class UserControllerTests {
                         .status().isBadRequest());
     }
 
-    @Test
-    public void testUpdateUser_givenRoleAsSpace_whenUpdateUser_thenReturn404() throws Exception {
-
-        /* given */
-        UUID userId = UUID.randomUUID();
-        userDTO.setUserId(userId);
-        userDTO.setRole("    ");
-        when(userService.updateUser(userDTO)).thenThrow(NullPointerException.class);
-
-        /* when */
-        ResultActions response = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .put("/v1/users/{userId}", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("utf-8")
-                        .content(objectMapper.writeValueAsString(userDTO)));
-
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers
-                        .status().isBadRequest());
-    }
 
     @Test
     public void testUpdateUser_givenInvalidId_whenUpdateUser_thenReturn404() throws Exception {
@@ -1041,12 +845,13 @@ public class UserControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-    @Test
-    public void testChangepassword_givenCurrentPasswordAsEmpty_whenChangePassword_thenThrowsException()
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testChangepassword_givenInvalidCurrentPassword_whenChangePassword_thenThrowsException(String currentPassword)
             throws Exception {
 
         /* given */
-        PasswordDTO passwordDTODTO = new PasswordDTO("", "newPassword");
+        PasswordDTO passwordDTODTO = new PasswordDTO(currentPassword, "newPassword");
         doThrow(NullPointerException.class)
                 .when(userService)
                 .changePassword(any(PasswordDTO.class));
@@ -1085,34 +890,14 @@ public class UserControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-    @Test
-    public void testChangepassword_givenCurrentPasswordAsSpace_whenChangePassword_thenThrowsException()
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void testChangepassword_givenInvalidNewPassword_whenChangePassword_thenThrowsException(String newPassword)
             throws Exception {
 
         /* given */
-        PasswordDTO passwordDTODTO = new PasswordDTO("      ", "newPassword");
-        doThrow(NullPointerException.class)
-                .when(userService)
-                .changePassword(any(PasswordDTO.class));
-
-        /* when */
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .post("/v1/users/change-password")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .content(objectMapper.writeValueAsString(passwordDTODTO)));
-
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
-    @Test
-    public void testChangepassword_givenNewPasswordAsEmpty_whenChangePassword_thenThrowsException()
-            throws Exception {
-
-        /* given */
-        PasswordDTO passwordDTODTO = new PasswordDTO("password", "");
+        PasswordDTO passwordDTODTO = new PasswordDTO("password", newPassword);
         doThrow(NullPointerException.class)
                 .when(userService)
                 .changePassword(any(PasswordDTO.class));
@@ -1151,27 +936,6 @@ public class UserControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-    @Test
-    public void testChangepassword_givenNewPasswordAsSpace_whenChangePassword_thenThrowsException()
-            throws Exception {
-
-        /* given */
-        PasswordDTO passwordDTODTO = new PasswordDTO("password", "    ");
-        doThrow(NullPointerException.class)
-                .when(userService)
-                .changePassword(any(PasswordDTO.class));
-
-        /* when */
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .post("/v1/users/change-password")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .content(objectMapper.writeValueAsString(passwordDTODTO)));
-
-        /* then */
-        response.andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
 
     @Test
     public void testChangepassword_givenInvalidArgs_whenChangePassword_thenThrowsException()
