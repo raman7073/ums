@@ -13,7 +13,7 @@ public interface UserService {
 
     UserDTO getUser(UUID userId);
 
-    boolean deleteUser(UUID userId);
+    void deleteUser(UUID userId);
 
     void changePassword(PasswordDTO passwordDTO);
 

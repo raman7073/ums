@@ -1,13 +1,14 @@
 package com.usermanagement.springboot.exceptions;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
+@Getter
+@Setter
 public class ErrorDetails {
 
     private LocalDateTime timestamp;

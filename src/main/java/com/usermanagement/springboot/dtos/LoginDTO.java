@@ -1,14 +1,18 @@
 package com.usermanagement.springboot.dtos;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class LoginDTO {
-    @NotEmpty
+
+    @NotBlank
     private String username;
-    @NotEmpty
+    @NotBlank
     private String password;
 }

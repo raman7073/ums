@@ -55,16 +55,16 @@ public class UserController {
     }
 
     @DeleteMapping(VAR_USERID)
-    public ResponseEntity<UserDTO> deleteUser(@PathVariable(USERID) UUID userId) {
+    public ResponseEntity<String> deleteUser(@PathVariable(USERID) UUID userId) {
 
         userService.deleteUser(userId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(CHANGEPASSWORD)
     public ResponseEntity<String> changePassword(@RequestBody @Valid PasswordDTO passwordDTO) {
 
-         userService.changePassword(passwordDTO);
-         return ResponseEntity.status(HttpStatus.OK).body(UPDATED);
+        userService.changePassword(passwordDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(UPDATED);
     }
 }

@@ -2,40 +2,39 @@ package com.usermanagement.springboot.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.usermanagement.springboot.entities.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.core.convert.converter.Converter;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static com.usermanagement.springboot.common.Constants.*;
 
-@Builder
+
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserDTO implements Converter<User, UserDTO> {
 
     private UUID userId;
 
-    @NotEmpty(message = INVALID_USERNAME)
+    @NotBlank(message = INVALID_USERNAME)
     private String username;
 
-    @NotEmpty(message = INVALID_PASSWORD)
+    @NotBlank(message = INVALID_PASSWORD)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @NotEmpty(message = INVALID_FIRST_NAME)
+    @NotBlank(message = INVALID_FIRST_NAME)
     private String firstName;
 
-    @NotEmpty(message = INVALID_LAST_NAME)
+    @NotBlank(message = INVALID_LAST_NAME)
     private String lastName;
 
-    @NotEmpty(message = INVALID_ROLE)
+    @NotBlank(message = INVALID_ROLE)
     private String role;
 
     private LocalDateTime createdAt;
@@ -46,12 +45,19 @@ public class UserDTO implements Converter<User, UserDTO> {
 
     @Override
     public UserDTO convert(User user) {
-        return UserDTO.builder().username(user.getUsername()).
-                userId(user.getUserId()).
-                firstName(user.getFirstName()).
-                lastName(user.getLastName()).
-                role(user.getRole()).
-                createdAt(user.getCreatedAt()).
-                updatedAt(user.getUpdatedAt()).build();
+
+                this.setUserId(user.getUserId());
+                this.setUsername(user.getUsername());
+                this.setPassword(user.getPassword());
+                this.setUserId(user.getUserId());
+                this.setFirstName(user.getFirstName());
+                this.setLastName(user.getLastName());
+                this.setRole(user.getRole());
+                this.setCreatedAt(user.getCreatedAt());
+                this.setUpdatedAt(user.getUpdatedAt());
+                this.setDeletedAt(user.getDeletedAt());
+                return this;
     }
+
+
 }
