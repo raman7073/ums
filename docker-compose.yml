@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  postgres:
+    container_name: postgresdb
+    image: postgres
+    environment:
+      POSTGRES_DB: MyFirstDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    restart: always
+    networks:
+      springboot-postgres-net:
+    ports:
+      - "5432:5432"
+
+  spring-restful-webservices:
+    container_name: spring-restful-webservices
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+       - "8080:8080"
+    environment:
+      spring.datasource.url: jdbc:postgresql://postgres:5432/MyFirstDB
+      spring.datasource.username: postgres
+      spring.datasource.password: admin
+    depends_on:
+      - postgres
+    networks:
+      springboot-postgres-net:
+    restart: on-failure
+
+
+
+networks:
+  springboot-postgres-net:
+
+
+
